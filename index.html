@@ -496,7 +496,7 @@ function load(k){try{const v=localStorage.getItem(k);return v?JSON.parse(v):null
 window.getDay = function getDay(d){if(!window.LOG[d])window.LOG[d]={meals:[{},{},{},{}],totals:{kcal:0,prot:0,carb:0,fat:0}};return window.LOG[d];}
 window.recalc = function recalc(d){const l=getDay(d);let t={kcal:0,prot:0,carb:0,fat:0};l.meals.forEach(m=>{if(m&&m.kcal){t.kcal+=m.kcal;t.prot+=m.prot;t.carb+=m.carb;t.fat+=m.fat;}});l.totals={kcal:Math.round(t.kcal),prot:Math.round(t.prot*10)/10,carb:Math.round(t.carb*10)/10,fat:Math.round(t.fat*10)/10};}
 
-function goTo(p){
+window.goTo = function goTo(p){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
@@ -504,8 +504,8 @@ function goTo(p){
   if(p==='historico')renderHist();if(p==='graficos')renderCharts();if(p==='perfil')renderPerfil();if(p==='metas')renderMetas();
 }
 
-function changeDay(d){const dt=new Date(window.curDate+'T12:00:00');dt.setDate(dt.getDate()+d);window.curDate=dt.toISOString().slice(0,10);sel={prot:{},carb:{},fat:{},veg:{}};window.curMeal=0;renderHoje();}
-function goToday(){window.curDate=todayStr();sel={prot:{},carb:{},fat:{},veg:{}};window.curMeal=0;renderHoje();}
+window.changeDay = function changeDay(d){const dt=new Date(window.curDate+'T12:00:00');dt.setDate(dt.getDate()+d);window.curDate=dt.toISOString().slice(0,10);sel={prot:{},carb:{},fat:{},veg:{}};window.curMeal=0;renderHoje();}
+window.goToday = function goToday(){window.curDate=todayStr();sel={prot:{},carb:{},fat:{},veg:{}};window.curMeal=0;renderHoje();}
 
 function macrosFor(food,qty){const g=food.pu?qty*food.pu:qty;return{kcal:Math.round((food.p*4+food.c*4+food.f*9)*g/100),prot:Math.round(food.p*g/100*10)/10,carb:Math.round(food.c*g/100*10)/10,fat:Math.round(food.f*g/100*10)/10};}
 function sumSel(){let t={kcal:0,prot:0,carb:0,fat:0};['prot','carb','fat','veg'].forEach(g=>Object.values(sel[g]).forEach(({food,qty})=>{const m=macrosFor(food,qty);t.kcal+=m.kcal;t.prot+=m.prot;t.carb+=m.carb;t.fat+=m.fat;}));return{kcal:Math.round(t.kcal),prot:Math.round(t.prot*10)/10,carb:Math.round(t.carb*10)/10,fat:Math.round(t.fat*10)/10};}
@@ -538,7 +538,7 @@ function renderSaved(){
   }).join('');
 }
 
-function editMeal(i){
+window.editMeal = function editMeal(i){
   if(!window.LOG[window.curDate]||!window.LOG[window.curDate].meals[i]||!window.LOG[window.curDate].meals[i].kcal)return;
   window.curMeal=i;
   sel={prot:{},carb:{},fat:{},veg:{}};
@@ -555,7 +555,7 @@ function editMeal(i){
   setTimeout(()=>{const el=document.getElementById('meal-tabs');if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});},100);
 }
 
-function delMeal(i){
+window.delMeal = function delMeal(i){
   if(!confirm(`Remover ${window.MNAMES[i]}?`))return;
   const l=getDay(window.curDate);l.meals[i]={};recalc(window.curDate);window.LOG[window.curDate]=l;save('mt_log',window.LOG);renderHoje();toast(`${window.MNAMES[i]} removido`);
 }
@@ -567,7 +567,7 @@ function renderTabs(){
   }).join('');
 }
 
-function switchMeal(i){sel={prot:{},carb:{},fat:{},veg:{}};window.curMeal=i;renderHoje();}
+window.switchMeal = function switchMeal(i){sel={prot:{},carb:{},fat:{},veg:{}};window.curMeal=i;renderHoje();}
 
 function renderFoodLists(){
   ['prot','carb','fat','veg'].forEach(grp=>{
@@ -579,7 +579,7 @@ function renderFoodLists(){
   });
 }
 
-function toggleFood(grp,idx){const key=grp+'_'+idx;if(sel[grp][key])delete sel[grp][key];else sel[grp][key]={food:window.FOODS[grp][idx],qty:window.FOODS[grp][idx].def};renderFoodLists();renderQty();renderResult();}
+window.toggleFood = function toggleFood(grp,idx){const key=grp+'_'+idx;if(sel[grp][key])delete sel[grp][key];else sel[grp][key]={food:window.FOODS[grp][idx],qty:window.FOODS[grp][idx].def};renderFoodLists();renderQty();renderResult();}
 
 function renderQty(){
   const rows=[];
@@ -587,7 +587,7 @@ function renderQty(){
   document.getElementById('qty-area').innerHTML=rows.length?rows.join(''):'<div style="padding:10px 0;font-size:12px;color:var(--text3)">Nenhum alimento selecionado</div>';
 }
 
-function updQty(grp,key,val){
+window.updQty = function updQty(grp,key,val){
   if(sel[grp][key]){
     const n=Math.max(1,Math.round(Number(val)||1));
     sel[grp][key].qty=n;
@@ -608,7 +608,7 @@ function previewQty(grp,key,val){
     renderResult();
   }
 }
-function remFood(grp,key){delete sel[grp][key];renderFoodLists();renderQty();renderResult();}
+window.remFood = function remFood(grp,key){delete sel[grp][key];renderFoodLists();renderQty();renderResult();}
 
 function renderResult(){
   const cur=sumSel();const tgt=window.MTARGETS[window.curMeal];
@@ -697,18 +697,18 @@ const NUTRI_DB = [
 
 // Unidades e conversões para porções comuns
 const UNIDADES = [
-  {pat:/(\d+(?:[.,]\d+)?)\s*kg/i,       mult:1000},
-  {pat:/(\d+(?:[.,]\d+)?)\s*g(?:ramas?)?/i, mult:1},
-  {pat:/(\d+(?:[.,]\d+)?)\s*ml/i,       mult:1},
-  {pat:/(\d+(?:[.,]\d+)?)\s*l(?:itros?)?/i, mult:1000},
-  {pat:/(\d+(?:[.,]\d+)?)\s*col(?:her)?(?:\s*(?:de\s*)?(?:sopa|cheia))?/i, mult:15},
-  {pat:/(\d+(?:[.,]\d+)?)\s*col(?:her)?(?:\s*(?:de\s*)?(?:chá|cafe))/i,   mult:5},
-  {pat:/(\d+(?:[.,]\d+)?)\s*x[íi]cara/i, mult:240},
-  {pat:/(\d+(?:[.,]\d+)?)\s*prat(?:o|ão)/i, mult:200},
-  {pat:/(\d+(?:[.,]\d+)?)\s*peda[çc]o/i, mult:100},
-  {pat:/(\d+(?:[.,]\d+)?)\s*fa(?:tia|tias)/i, mult:25},
-  {pat:/(\d+(?:[.,]\d+)?)\s*un(?:idade)?s?/i, mult:null}, // unit-based
-  {pat:/^(\d+(?:[.,]\d+)?)\s*$/,         mult:1},  // bare number = grams
+  {pat:/([0-9]+(?:[.,][0-9]+)?)\s*kg/i,        mult:1000},
+  {pat:/([0-9]+(?:[.,][0-9]+)?)\s*g/i,          mult:1},
+  {pat:/([0-9]+(?:[.,][0-9]+)?)\s*ml/i,         mult:1},
+  {pat:/([0-9]+(?:[.,][0-9]+)?)\s*litros?/i,    mult:1000},
+  {pat:/([0-9]+(?:[.,][0-9]+)?)\s*col(?:heres?)?(?:\s*de\s*sopa)?/i, mult:15},
+  {pat:/([0-9]+(?:[.,][0-9]+)?)\s*col(?:heres?)?\s*de\s*cha/i,       mult:5},
+  {pat:/([0-9]+(?:[.,][0-9]+)?)\s*x[ic]cara/i,  mult:240},
+  {pat:/([0-9]+(?:[.,][0-9]+)?)\s*prato/i,       mult:200},
+  {pat:/([0-9]+(?:[.,][0-9]+)?)\s*pedaco/i,      mult:100},
+  {pat:/([0-9]+(?:[.,][0-9]+)?)\s*fatias?/i,     mult:25},
+  {pat:/([0-9]+(?:[.,][0-9]+)?)\s*un(?:idades?)?/i, mult:null},
+  {pat:/^([0-9]+(?:[.,][0-9]+)?)\s*$/,           mult:1},
 ];
 
 function parseQty(text) {
@@ -738,7 +738,7 @@ function findFood(text) {
   return best;
 }
 
-function parseRefeicao() {
+window.parseRefeicao = function parseRefeicao() {
   const raw = document.getElementById('ai-input').value.trim();
   if (!raw) { toast('Descreva o que comeu primeiro'); return; }
 
@@ -839,7 +839,7 @@ function parseRefeicao() {
   document.getElementById('ai-preview').style.display = 'block';
 }
 
-function confirmAI() {
+window.confirmAI = function confirmAI() {
   if (!window._aiPend) return;
   const t = window._aiPend.totals;
   const l = window.getDay(window.curDate || todayStr());
@@ -857,7 +857,7 @@ function confirmAI() {
   toast(`${(window.MNAMES||['Café da manhã','Almoço','Lanche','Jantar'])[window.curMeal||0]} adicionado!`, true);
 }
 
-function setMode(m) {
+window.setMode = function setMode(m) {
   document.getElementById('mode-manual').classList.toggle('active', m === 'manual');
   document.getElementById('mode-ai').classList.toggle('active', m === 'ai');
   document.getElementById('sec-manual').style.display = m === 'manual' ? 'block' : 'none';
@@ -873,7 +873,7 @@ function renderHist(){
   tbody.innerHTML=dates.map(d=>{const t=window.LOG[d].totals;const r=t.kcal/window.GOALS.kcal;const sc=r>=0.88&&r<=1.15?'ok':r>1.15?'over':'low';const lbl=sc==='ok'?'Na meta':sc==='over'?'Acima':'Abaixo';const dp=new Date(d+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short',weekday:'short'});return `<tr onclick="jumpDate('${d}')" style="cursor:pointer"><td>${dp}</td><td>${t.kcal}</td><td>${t.prot}g</td><td>${t.carb}g</td><td>${t.fat}g</td><td><span class="pill ${sc}">${lbl}</span></td></tr>`;}).join('');
 }
 
-function jumpDate(d){window.curDate=d;sel={prot:{},carb:{},fat:{},veg:{}};window.curMeal=0;goTo('hoje');renderHoje();}
+window.jumpDate = function jumpDate(d){window.curDate=d;sel={prot:{},carb:{},fat:{},veg:{}};window.curMeal=0;goTo('hoje');renderHoje();}
 
 // ── CHARTS ───────────────────────────────────────────────────────────────────
 function renderCharts(){
@@ -905,7 +905,7 @@ function renderMetas(){
 window.saveMetas = function saveMetas(){window.GOALS={kcal:Number(document.getElementById('m-kcal').value),prot:Number(document.getElementById('m-prot').value),carb:Number(document.getElementById('m-carb').value),fat:Number(document.getElementById('m-fat').value)};save('mt_goals',window.GOALS);renderHoje();toast('Metas salvas!',true);}
 
 // ── TOAST ─────────────────────────────────────────────────────────────────────
-function toast(msg,ok=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(ok?' ok':' err');setTimeout(()=>{t.className='toast';},2800);}
+window.toast = function toast(msg,ok=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(ok?' ok':' err');setTimeout(()=>{t.className='toast';},2800);}
 
 // ── STATE INIT (after functions are defined) ────────────────────────────────
 window.curDate = todayStr();
