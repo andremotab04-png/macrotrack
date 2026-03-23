@@ -47,7 +47,9 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById('user-avatar').style.display = user.photoURL ? 'block' : 'none';
     // Load all data from Firestore
     await window.fbLoadAll();
-    window.renderHoje();
+    window.curDate = new Date().toISOString().slice(0,10);
+    window.curMeal = 0;
+    if(window.renderHoje) window.renderHoje(); else setTimeout(()=>window.renderHoje&&window.renderHoje(), 500);
   } else {
     window.FB_USER = null;
     document.getElementById('login-screen').style.display = 'flex';
@@ -467,7 +469,7 @@ const FOODS={
 const MNAMES=["Café da manhã","Almoço","Lanche","Jantar"];
 const MTARGETS=[{kcal:820,prot:43,carb:100,fat:25},{kcal:870,prot:55,carb:103,fat:12},{kcal:580,prot:28,carb:70,fat:18},{kcal:680,prot:49,carb:80,fat:18}];
 
-let curDate=todayStr(),curMeal=0,sel={prot:{},carb:{},fat:{},veg:{}};
+window.curDate=todayStr();window.curMeal=0;let sel={prot:{},carb:{},fat:{},veg:{}};
 window.GOALS=load('mt_goals')||{kcal:3300,prot:175,carb:415,fat:85};
 window.PROFILE=load('mt_profile')||{nome:'',idade:22,peso:70,altura:184,obj:'massa',atv:'moderado'};
 window.LOG=load('mt_log')||{};
@@ -497,8 +499,8 @@ function goTo(p){
   if(p==='historico')renderHist();if(p==='graficos')renderCharts();if(p==='perfil')renderPerfil();if(p==='metas')renderMetas();
 }
 
-function changeDay(d){const dt=new Date(curDate+'T12:00:00');dt.setDate(dt.getDate()+d);curDate=dt.toISOString().slice(0,10);sel={prot:{},carb:{},fat:{},veg:{}};curMeal=0;renderHoje();}
-function goToday(){curDate=todayStr();sel={prot:{},carb:{},fat:{},veg:{}};curMeal=0;renderHoje();}
+function changeDay(d){const dt=new Date(window.curDate+'T12:00:00');dt.setDate(dt.getDate()+d);window.curDate=dt.toISOString().slice(0,10);sel={prot:{},carb:{},fat:{},veg:{}};window.curMeal=0;renderHoje();}
+function goToday(){window.curDate=todayStr();sel={prot:{},carb:{},fat:{},veg:{}};window.curMeal=0;renderHoje();}
 
 function macrosFor(food,qty){const g=food.pu?qty*food.pu:qty;return{kcal:Math.round((food.p*4+food.c*4+food.f*9)*g/100),prot:Math.round(food.p*g/100*10)/10,carb:Math.round(food.c*g/100*10)/10,fat:Math.round(food.f*g/100*10)/10};}
 function sumSel(){let t={kcal:0,prot:0,carb:0,fat:0};['prot','carb','fat','veg'].forEach(g=>Object.values(sel[g]).forEach(({food,qty})=>{const m=macrosFor(food,qty);t.kcal+=m.kcal;t.prot+=m.prot;t.carb+=m.carb;t.fat+=m.fat;}));return{kcal:Math.round(t.kcal),prot:Math.round(t.prot*10)/10,carb:Math.round(t.carb*10)/10,fat:Math.round(t.fat*10)/10};}
@@ -506,24 +508,24 @@ function dayTot(d){return(window.LOG[d]&&window.LOG[d].totals)||{kcal:0,prot:0,c
 
 
 window.renderHoje = function renderHoje(){
-  const d=new Date(curDate+'T12:00:00');
+  const d=new Date(window.curDate+'T12:00:00');
   const lbl=d.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('today-label').textContent=lbl.charAt(0).toUpperCase()+lbl.slice(1);
-  document.getElementById('date-display').textContent=curDate;
-  document.getElementById('sb-date').textContent=curDate;
+  document.getElementById('date-display').textContent=window.curDate;
+  document.getElementById('sb-date').textContent=window.curDate;
   // streak
   const days=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
   const sr=document.getElementById('streak-row');sr.innerHTML='';
   for(let i=6;i>=0;i--){const dt=new Date();dt.setDate(dt.getDate()-i);const ds=dt.toISOString().slice(0,10);const done=window.LOG[ds]&&(window.LOG[ds].totals||{}).kcal>500;sr.innerHTML+=`<div class="streak-day ${done?'done':''}"><span class="streak-day-name">${days[dt.getDay()]}</span><div class="streak-day-dot"></div><span style="font-size:9px;color:var(--text3)">${done?'✓':''}</span></div>`;}
   // stats
-  const tot=dayTot(curDate);const pct=(v,t)=>Math.min(100,Math.round(v/t*100));
+  const tot=dayTot(window.curDate);const pct=(v,t)=>Math.min(100,Math.round(v/t*100));
   document.getElementById('sc-kcal').textContent=tot.kcal||0;document.getElementById('sc-prot').textContent=(tot.prot||0)+'g';document.getElementById('sc-carb').textContent=(tot.carb||0)+'g';document.getElementById('sc-fat').textContent=(tot.fat||0)+'g';
   document.getElementById('sb-kcal').style.width=pct(tot.kcal||0,window.GOALS.kcal)+'%';document.getElementById('sb-prot').style.width=pct(tot.prot||0,window.GOALS.prot)+'%';document.getElementById('sb-carb').style.width=pct(tot.carb||0,window.GOALS.carb)+'%';document.getElementById('sb-fat').style.width=pct(tot.fat||0,window.GOALS.fat)+'%';
   renderSaved();renderTabs();renderFoodLists();renderQty();renderResult();
 }
 
 function renderSaved(){
-  const log=window.LOG[curDate];
+  const log=window.LOG[window.curDate];
   document.getElementById('saved-grid').innerHTML=MNAMES.map((name,i)=>{
     const m=log&&log.meals[i];const has=m&&m.kcal>0;
     if(!has)return `<div class="smc empty"><div class="smc-head"><span class="smc-name">${name}</span></div><div style="font-size:12px;color:var(--text3)">Não registrado</div></div>`;
@@ -532,11 +534,11 @@ function renderSaved(){
 }
 
 function editMeal(i){
-  if(!window.LOG[curDate]||!window.LOG[curDate].meals[i]||!window.LOG[curDate].meals[i].kcal)return;
-  curMeal=i;
+  if(!window.LOG[window.curDate]||!window.LOG[window.curDate].meals[i]||!window.LOG[window.curDate].meals[i].kcal)return;
+  window.curMeal=i;
   sel={prot:{},carb:{},fat:{},veg:{}};
   // Restore previously selected items if saved
-  const saved=window.LOG[curDate].meals[i];
+  const saved=window.LOG[window.curDate].meals[i];
   if(saved.items&&saved.items.length){
     saved.items.forEach(({grp,idx,qty})=>{
       const food=FOODS[grp]&&FOODS[grp][idx];
@@ -550,17 +552,17 @@ function editMeal(i){
 
 function delMeal(i){
   if(!confirm(`Remover ${MNAMES[i]}?`))return;
-  const l=getDay(curDate);l.meals[i]={};recalc(curDate);window.LOG[curDate]=l;save('mt_log',window.LOG);renderHoje();toast(`${MNAMES[i]} removido`);
+  const l=getDay(window.curDate);l.meals[i]={};recalc(window.curDate);window.LOG[window.curDate]=l;save('mt_log',window.LOG);renderHoje();toast(`${MNAMES[i]} removido`);
 }
 
 function renderTabs(){
   document.getElementById('meal-tabs').innerHTML=MNAMES.map((n,i)=>{
-    const saved=window.LOG[curDate]&&window.LOG[curDate].meals[i]&&window.LOG[curDate].meals[i].kcal>0;
-    return `<button class="meal-tab ${i===curMeal?'active':''}" onclick="switchMeal(${i})">${n}${saved?' ✓':''}</button>`;
+    const saved=window.LOG[window.curDate]&&window.LOG[window.curDate].meals[i]&&window.LOG[window.curDate].meals[i].kcal>0;
+    return `<button class="meal-tab ${i===window.curMeal?'active':''}" onclick="switchMeal(${i})">${n}${saved?' ✓':''}</button>`;
   }).join('');
 }
 
-function switchMeal(i){sel={prot:{},carb:{},fat:{},veg:{}};curMeal=i;renderHoje();}
+function switchMeal(i){sel={prot:{},carb:{},fat:{},veg:{}};window.curMeal=i;renderHoje();}
 
 function renderFoodLists(){
   ['prot','carb','fat','veg'].forEach(grp=>{
@@ -604,7 +606,7 @@ function previewQty(grp,key,val){
 function remFood(grp,key){delete sel[grp][key];renderFoodLists();renderQty();renderResult();}
 
 function renderResult(){
-  const cur=sumSel();const tgt=MTARGETS[curMeal];
+  const cur=sumSel();const tgt=MTARGETS[window.curMeal];
   document.getElementById('meal-result').innerHTML=[{label:'Calorias',val:cur.kcal,tgt:tgt.kcal,unit:'kcal',color:'#3de87a'},{label:'Proteína',val:cur.prot,tgt:tgt.prot,unit:'g',color:'#5b9cf6'},{label:'Carboidrato',val:cur.carb,tgt:tgt.carb,unit:'g',color:'#f5a623'},{label:'Gordura',val:cur.fat,tgt:tgt.fat,unit:'g',color:'#a78bfa'}].map(r=>{const pct=Math.min(100,Math.round(r.val/r.tgt*100));const ratio=r.val/r.tgt;const sc=ratio>=0.88&&ratio<=1.18?'ok':ratio>1.18?'over':'low';const diff=Math.round(Math.abs(r.val-r.tgt));const suf=sc==='ok'?' ✓':sc==='over'?` +${diff}`:` -${diff}`;return `<div class="result-row"><span class="result-label">${r.label} <span style="color:var(--text3);font-size:11px">/${r.tgt}${r.unit}</span></span><div class="result-bar-wrap"><div class="result-bar-fill" style="width:${pct}%;background:${r.color}"></div></div><span class="result-val status-${sc}">${r.val}${r.unit}${suf}</span></div>`;}).join('');
 }
 
@@ -621,10 +623,10 @@ window.saveMeal = function saveMeal(){
     });
   });
   const label=foods.slice(0,3).join(', ')+(foods.length>3?` +${foods.length-3} item(s)`:'');
-  const l=getDay(curDate);
-  l.meals[curMeal]={...cur,label,items,saved:true};
-  recalc(curDate);window.LOG[curDate]=l;save('mt_log',window.LOG);
-  sel={prot:{},carb:{},fat:{},veg:{}};renderHoje();toast(`${MNAMES[curMeal]} adicionado!`,true);
+  const l=getDay(window.curDate);
+  l.meals[window.curMeal]={...cur,label,items,saved:true};
+  recalc(window.curDate);window.LOG[window.curDate]=l;save('mt_log',window.LOG);
+  sel={prot:{},carb:{},fat:{},veg:{}};renderHoje();toast(`${MNAMES[window.curMeal]} adicionado!`,true);
 }
 
 // ── AI ──────────────────────────────────────────────────────────────────────
@@ -866,7 +868,7 @@ function renderHist(){
   tbody.innerHTML=dates.map(d=>{const t=window.LOG[d].totals;const r=t.kcal/window.GOALS.kcal;const sc=r>=0.88&&r<=1.15?'ok':r>1.15?'over':'low';const lbl=sc==='ok'?'Na meta':sc==='over'?'Acima':'Abaixo';const dp=new Date(d+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short',weekday:'short'});return `<tr onclick="jumpDate('${d}')" style="cursor:pointer"><td>${dp}</td><td>${t.kcal}</td><td>${t.prot}g</td><td>${t.carb}g</td><td>${t.fat}g</td><td><span class="pill ${sc}">${lbl}</span></td></tr>`;}).join('');
 }
 
-function jumpDate(d){curDate=d;sel={prot:{},carb:{},fat:{},veg:{}};curMeal=0;goTo('hoje');renderHoje();}
+function jumpDate(d){window.curDate=d;sel={prot:{},carb:{},fat:{},veg:{}};window.curMeal=0;goTo('hoje');renderHoje();}
 
 // ── CHARTS ───────────────────────────────────────────────────────────────────
 function renderCharts(){
