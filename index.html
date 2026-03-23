@@ -477,10 +477,7 @@ window.FOODS={
 window.MNAMES=["Café da manhã","Almoço","Lanche","Jantar"];
 window.MTARGETS=[{kcal:820,prot:43,carb:100,fat:25},{kcal:870,prot:55,carb:103,fat:12},{kcal:580,prot:28,carb:70,fat:18},{kcal:680,prot:49,carb:80,fat:18}];
 
-window.curDate=todayStr();window.curMeal=0;let sel={prot:{},carb:{},fat:{},veg:{}};
-window.GOALS=load('mt_goals')||{kcal:3300,prot:175,carb:415,fat:85};
-window.PROFILE=load('mt_profile')||{nome:'',idade:22,peso:70,altura:184,obj:'massa',atv:'moderado'};
-window.LOG=load('mt_log')||{};
+let sel={prot:{},carb:{},fat:{},veg:{}}; // state initialized below after functions
 
 function todayStr(){return new Date().toISOString().slice(0,10);}
 function save(k,v){
@@ -910,6 +907,12 @@ window.saveMetas = function saveMetas(){window.GOALS={kcal:Number(document.getEl
 // ── TOAST ─────────────────────────────────────────────────────────────────────
 function toast(msg,ok=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(ok?' ok':' err');setTimeout(()=>{t.className='toast';},2800);}
 
+// ── STATE INIT (after functions are defined) ────────────────────────────────
+window.curDate = todayStr();
+window.curMeal = 0;
+window.GOALS   = load('mt_goals')   || {kcal:3300, prot:175, carb:415, fat:85};
+window.PROFILE = load('mt_profile') || {nome:'', idade:22, peso:70, altura:184, obj:'massa', atv:'moderado'};
+window.LOG     = load('mt_log')     || {};
 // renderHoje called after Firebase auth
 </script>
 </body>
