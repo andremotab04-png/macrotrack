@@ -49,7 +49,15 @@ onAuthStateChanged(auth, async (user) => {
     await window.fbLoadAll();
     window.curDate = new Date().toISOString().slice(0,10);
     window.curMeal = 0;
-    if(window.renderHoje) window.renderHoje(); else setTimeout(()=>window.renderHoje&&window.renderHoje(), 500);
+    // Wait for main script to be ready
+    const waitRender = () => {
+      if (typeof window.renderHoje === 'function') {
+        window.renderHoje();
+      } else {
+        setTimeout(waitRender, 100);
+      }
+    };
+    waitRender();
   } else {
     window.FB_USER = null;
     document.getElementById('login-screen').style.display = 'flex';
@@ -421,7 +429,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 <div class="toast" id="toast"></div>
 
 <script>
-const FOODS={
+window.FOODS={
   prot:[
     {name:"Peito de frango grelhado",p:31,c:0,  f:3.6,unit:"g", def:180},
     {name:"Frango desfiado",         p:29,c:0,  f:4,  unit:"g", def:150},
@@ -466,8 +474,8 @@ const FOODS={
   ]
 };
 
-const MNAMES=["Café da manhã","Almoço","Lanche","Jantar"];
-const MTARGETS=[{kcal:820,prot:43,carb:100,fat:25},{kcal:870,prot:55,carb:103,fat:12},{kcal:580,prot:28,carb:70,fat:18},{kcal:680,prot:49,carb:80,fat:18}];
+window.MNAMES=["Café da manhã","Almoço","Lanche","Jantar"];
+window.MTARGETS=[{kcal:820,prot:43,carb:100,fat:25},{kcal:870,prot:55,carb:103,fat:12},{kcal:580,prot:28,carb:70,fat:18},{kcal:680,prot:49,carb:80,fat:18}];
 
 window.curDate=todayStr();window.curMeal=0;let sel={prot:{},carb:{},fat:{},veg:{}};
 window.GOALS=load('mt_goals')||{kcal:3300,prot:175,carb:415,fat:85};
@@ -526,7 +534,7 @@ window.renderHoje = function renderHoje(){
 
 function renderSaved(){
   const log=window.LOG[window.curDate];
-  document.getElementById('saved-grid').innerHTML=MNAMES.map((name,i)=>{
+  document.getElementById('saved-grid').innerHTML=window.MNAMES.map((name,i)=>{
     const m=log&&log.meals[i];const has=m&&m.kcal>0;
     if(!has)return `<div class="smc empty"><div class="smc-head"><span class="smc-name">${name}</span></div><div style="font-size:12px;color:var(--text3)">Não registrado</div></div>`;
     return `<div class="smc"><div class="smc-head"><span class="smc-name">${name}</span><div class="smc-actions"><button class="smc-btn edit" onclick="editMeal(${i})">editar</button><button class="smc-btn del" onclick="delMeal(${i})">remover</button></div></div><div class="smc-kcal">${m.kcal} kcal</div><div class="smc-macros">${m.prot}g prot · ${m.carb}g carb · ${m.fat}g gord</div><div class="smc-label">${m.label||''}</div></div>`;
@@ -541,22 +549,22 @@ function editMeal(i){
   const saved=window.LOG[window.curDate].meals[i];
   if(saved.items&&saved.items.length){
     saved.items.forEach(({grp,idx,qty})=>{
-      const food=FOODS[grp]&&FOODS[grp][idx];
+      const food=window.FOODS[grp]&&window.FOODS[grp][idx];
       if(food) sel[grp][grp+'_'+idx]={food,qty};
     });
   }
   renderHoje();
-  toast(`Editando ${MNAMES[i]} — ajuste e salve novamente`,false);
+  toast(`Editando ${window.MNAMES[i]} — ajuste e salve novamente`,false);
   setTimeout(()=>{const el=document.getElementById('meal-tabs');if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});},100);
 }
 
 function delMeal(i){
-  if(!confirm(`Remover ${MNAMES[i]}?`))return;
-  const l=getDay(window.curDate);l.meals[i]={};recalc(window.curDate);window.LOG[window.curDate]=l;save('mt_log',window.LOG);renderHoje();toast(`${MNAMES[i]} removido`);
+  if(!confirm(`Remover ${window.MNAMES[i]}?`))return;
+  const l=getDay(window.curDate);l.meals[i]={};recalc(window.curDate);window.LOG[window.curDate]=l;save('mt_log',window.LOG);renderHoje();toast(`${window.MNAMES[i]} removido`);
 }
 
 function renderTabs(){
-  document.getElementById('meal-tabs').innerHTML=MNAMES.map((n,i)=>{
+  document.getElementById('meal-tabs').innerHTML=window.MNAMES.map((n,i)=>{
     const saved=window.LOG[window.curDate]&&window.LOG[window.curDate].meals[i]&&window.LOG[window.curDate].meals[i].kcal>0;
     return `<button class="meal-tab ${i===window.curMeal?'active':''}" onclick="switchMeal(${i})">${n}${saved?' ✓':''}</button>`;
   }).join('');
@@ -566,7 +574,7 @@ function switchMeal(i){sel={prot:{},carb:{},fat:{},veg:{}};window.curMeal=i;rend
 
 function renderFoodLists(){
   ['prot','carb','fat','veg'].forEach(grp=>{
-    document.getElementById('list-'+grp).innerHTML=FOODS[grp].map((food,i)=>{
+    document.getElementById('list-'+grp).innerHTML=window.FOODS[grp].map((food,i)=>{
       const key=grp+'_'+i;const sel2=!!sel[grp][key];
       const kc=food.pu?Math.round((food.p*4+food.c*4+food.f*9)*food.pu/100)+' kcal/un':Math.round((food.p*4+food.c*4+food.f*9))+' kcal/100g';
       return `<div class="food-item${sel2?' selected':''}" onclick="toggleFood('${grp}',${i})"><span class="food-item-name">${food.name}</span><span class="food-badge ${grp==='veg'?'veg':grp}">${kc}</span></div>`;
@@ -574,7 +582,7 @@ function renderFoodLists(){
   });
 }
 
-function toggleFood(grp,idx){const key=grp+'_'+idx;if(sel[grp][key])delete sel[grp][key];else sel[grp][key]={food:FOODS[grp][idx],qty:FOODS[grp][idx].def};renderFoodLists();renderQty();renderResult();}
+function toggleFood(grp,idx){const key=grp+'_'+idx;if(sel[grp][key])delete sel[grp][key];else sel[grp][key]={food:window.FOODS[grp][idx],qty:window.FOODS[grp][idx].def};renderFoodLists();renderQty();renderResult();}
 
 function renderQty(){
   const rows=[];
@@ -606,7 +614,7 @@ function previewQty(grp,key,val){
 function remFood(grp,key){delete sel[grp][key];renderFoodLists();renderQty();renderResult();}
 
 function renderResult(){
-  const cur=sumSel();const tgt=MTARGETS[window.curMeal];
+  const cur=sumSel();const tgt=window.MTARGETS[window.curMeal];
   document.getElementById('meal-result').innerHTML=[{label:'Calorias',val:cur.kcal,tgt:tgt.kcal,unit:'kcal',color:'#3de87a'},{label:'Proteína',val:cur.prot,tgt:tgt.prot,unit:'g',color:'#5b9cf6'},{label:'Carboidrato',val:cur.carb,tgt:tgt.carb,unit:'g',color:'#f5a623'},{label:'Gordura',val:cur.fat,tgt:tgt.fat,unit:'g',color:'#a78bfa'}].map(r=>{const pct=Math.min(100,Math.round(r.val/r.tgt*100));const ratio=r.val/r.tgt;const sc=ratio>=0.88&&ratio<=1.18?'ok':ratio>1.18?'over':'low';const diff=Math.round(Math.abs(r.val-r.tgt));const suf=sc==='ok'?' ✓':sc==='over'?` +${diff}`:` -${diff}`;return `<div class="result-row"><span class="result-label">${r.label} <span style="color:var(--text3);font-size:11px">/${r.tgt}${r.unit}</span></span><div class="result-bar-wrap"><div class="result-bar-fill" style="width:${pct}%;background:${r.color}"></div></div><span class="result-val status-${sc}">${r.val}${r.unit}${suf}</span></div>`;}).join('');
 }
 
@@ -626,7 +634,7 @@ window.saveMeal = function saveMeal(){
   const l=getDay(window.curDate);
   l.meals[window.curMeal]={...cur,label,items,saved:true};
   recalc(window.curDate);window.LOG[window.curDate]=l;save('mt_log',window.LOG);
-  sel={prot:{},carb:{},fat:{},veg:{}};renderHoje();toast(`${MNAMES[window.curMeal]} adicionado!`,true);
+  sel={prot:{},carb:{},fat:{},veg:{}};renderHoje();toast(`${window.MNAMES[window.curMeal]} adicionado!`,true);
 }
 
 // ── AI ──────────────────────────────────────────────────────────────────────
@@ -895,7 +903,7 @@ window.savePerfil = function savePerfil(){window.PROFILE={nome:document.getEleme
 // ── METAS ────────────────────────────────────────────────────────────────────
 function renderMetas(){
   document.getElementById('m-kcal').value=window.GOALS.kcal;document.getElementById('m-prot').value=window.GOALS.prot;document.getElementById('m-carb').value=window.GOALS.carb;document.getElementById('m-fat').value=window.GOALS.fat;
-  document.getElementById('meta-meals').innerHTML=MNAMES.map((n,i)=>{const t=MTARGETS[i];return `<div style="background:var(--bg3);border-radius:var(--radius-sm);padding:12px"><div style="font-size:11px;color:var(--text3);margin-bottom:5px">${n}</div><div style="font-size:16px;font-weight:600;color:var(--green);font-family:'DM Mono',monospace">${t.kcal} kcal</div><div style="font-size:11px;color:var(--text3);margin-top:3px">${t.prot}g prot·${t.carb}g carb</div></div>`;}).join('');
+  document.getElementById('meta-meals').innerHTML=window.MNAMES.map((n,i)=>{const t=window.MTARGETS[i];return `<div style="background:var(--bg3);border-radius:var(--radius-sm);padding:12px"><div style="font-size:11px;color:var(--text3);margin-bottom:5px">${n}</div><div style="font-size:16px;font-weight:600;color:var(--green);font-family:'DM Mono',monospace">${t.kcal} kcal</div><div style="font-size:11px;color:var(--text3);margin-top:3px">${t.prot}g prot·${t.carb}g carb</div></div>`;}).join('');
 }
 window.saveMetas = function saveMetas(){window.GOALS={kcal:Number(document.getElementById('m-kcal').value),prot:Number(document.getElementById('m-prot').value),carb:Number(document.getElementById('m-carb').value),fat:Number(document.getElementById('m-fat').value)};save('mt_goals',window.GOALS);renderHoje();toast('Metas salvas!',true);}
 
