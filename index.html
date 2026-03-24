@@ -681,38 +681,34 @@ function findFood(text){
 
 // Extrai quantidade do texto
 function extractQty(text){
-  var t=norm(text);
-  var patterns=[
-    {re:/([0-9]+(?:[.,][0-9]+)?)\s*kg/,mult:1000},
-    {re:/([0-9]+(?:[.,][0-9]+)?)\s*g/,mult:1},
-    {re:/([0-9]+(?:[.,][0-9]+)?)\s*ml/,mult:1},
-    {re:/([0-9]+(?:[.,][0-9]+)?)\s*litros?/,mult:1000},
-    {re:/([0-9]+(?:[.,][0-9]+)?)\s*colheres?\s*de\s*sopa/,mult:15},
-    {re:/([0-9]+(?:[.,][0-9]+)?)\s*col\s*de\s*sopa/,mult:15},
-    {re:/([0-9]+(?:[.,][0-9]+)?)\s*colheres?/,mult:15},
-    {re:/([0-9]+(?:[.,][0-9]+)?)\s*col/,mult:15},
-    {re:/([0-9]+(?:[.,][0-9]+)?)\s*x[ic]caras?/,mult:240},
-    {re:/([0-9]+(?:[.,][0-9]+)?)\s*pratos?/,mult:200},
-    {re:/([0-9]+(?:[.,][0-9]+)?)\s*pedacos?/,mult:100},
-    {re:/([0-9]+(?:[.,][0-9]+)?)\s*fatias?/,mult:25},
-    {re:/([0-9]+(?:[.,][0-9]+)?)\s*unidades?/,mult:null},
-    {re:/([0-9]+(?:[.,][0-9]+)?)\s*un/,mult:null},
+  var t=text.toLowerCase();
+  var tests=[
+    [/([0-9]+(?:[.,][0-9]+)?)\s*kg/i,         1000],
+    [/([0-9]+(?:[.,][0-9]+)?)\s*gramas?/i,      1],
+    [/([0-9]+(?:[.,][0-9]+)?)\s*g\b/i,          1],
+    [/([0-9]+(?:[.,][0-9]+)?)\s*ml\b/i,         1],
+    [/([0-9]+(?:[.,][0-9]+)?)\s*litros?/i,       1000],
+    [/([0-9]+(?:[.,][0-9]+)?)\s*colheres?\s+de\s+sopa/i, 15],
+    [/([0-9]+(?:[.,][0-9]+)?)\s*colheres?/i,     15],
+    [/([0-9]+(?:[.,][0-9]+)?)\s*xicaras?/i,      240],
+    [/([0-9]+(?:[.,][0-9]+)?)\s*pratos?/i,       200],
+    [/([0-9]+(?:[.,][0-9]+)?)\s*pedacos?/i,      100],
+    [/([0-9]+(?:[.,][0-9]+)?)\s*fatias?/i,       25],
+    [/([0-9]+(?:[.,][0-9]+)?)\s*unidades?/i,     null],
+    [/([0-9]+(?:[.,][0-9]+)?)\s*un\b/i,         null],
   ];
-  for(var i=0;i<patterns.length;i++){
-    var m=t.match(patterns[i].re);
+  for(var i=0;i<tests.length;i++){
+    var m=t.match(tests[i][0]);
     if(m){
       var n=parseFloat(m[1].replace(',','.'));
-      if(patterns[i].mult===null) return {grams:null,isUnit:true,rawQty:n};
-      return {grams:n*patterns[i].mult,isUnit:false,rawQty:n*patterns[i].mult};
+      if(tests[i][1]===null) return {grams:null,isUnit:true,rawQty:n};
+      return {grams:n*tests[i][1],isUnit:false,rawQty:n*tests[i][1]};
     }
   }
-  // numero solto no inicio
   var nm=t.match(/^([0-9]+(?:[.,][0-9]+)?)/);
   if(nm) return {grams:parseFloat(nm[1].replace(',','.')),isUnit:false,rawQty:parseFloat(nm[1].replace(',','.'))};
   return null;
-}
-
-function parseRefeicao(){
+}unction parseRefeicao(){
   var raw=document.getElementById('ai-input').value.trim();
   if(!raw){toast('Descreva o que comeu primeiro');return;}
   // split por vírgula, ponto e vírgula, "e", nova linha
@@ -795,12 +791,17 @@ var _auth = firebase.auth();
 var _provider = new firebase.auth.GoogleAuthProvider();
 
 function fbLogin(){
-  _auth.signInWithPopup(_provider).catch(function(e){alert('Erro no login: '+e.message);});
+  _auth.signInWithRedirect(_provider).catch(function(e){alert('Erro no login: '+e.message);});
 }
 function fbLogout(){
   if(!confirm('Sair da conta?')) return;
   _auth.signOut();
 }
+
+// Handle redirect result (for signInWithRedirect)
+_auth.getRedirectResult().catch(function(e){
+  if(e.code !== 'auth/no-current-user') console.error('redirect error', e);
+});
 
 _auth.onAuthStateChanged(function(user){
   if(user){
