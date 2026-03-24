@@ -568,12 +568,19 @@ var _auth = firebase.auth();
 var _provider = new firebase.auth.GoogleAuthProvider();
 
 function fbLogin(){
-  _auth.signInWithPopup(_provider).catch(function(e){alert('Erro no login: '+e.message);});
+  _auth.signInWithRedirect(_provider).catch(function(e){alert('Erro no login: '+e.message);});
 }
 function fbLogout(){
   if(!confirm('Sair da conta?')) return;
   _auth.signOut();
 }
+
+// Handle redirect result after Google login
+_auth.getRedirectResult().then(function(result){
+  // result handled by onAuthStateChanged below
+}).catch(function(e){
+  if(e.code && e.code !== 'auth/no-current-user') console.error('redirect error:', e.message);
+});
 
 _auth.onAuthStateChanged(function(user){
   if(user){
