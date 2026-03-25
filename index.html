@@ -569,106 +569,63 @@ var _auth = firebase.auth();
 var _provider = new firebase.auth.GoogleAuthProvider();
 
 function fbLogin(){
-  var isStandalone = window.navigator.standalone === true; // iOS PWA mode
+  var btn = document.querySelector('.login-btn');
   var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
-  if(isStandalone){
-    // iOS PWA: redirect breaks the standalone context
-    // Open login in a new Safari tab, then come back
-    var btn = document.querySelector('.login-btn');
-    if(btn){ btn.textContent = 'Abrindo login...'; btn.disabled = true; }
-
-    // Use signInWithPopup but open it as a new window (works in standalone)
-    var provider = new firebase.auth.GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: 'select_account' });
-
-    // Store flag so we know to check auth when app regains focus
-    localStorage.setItem('mt_login_pending', '1');
-
-    _auth.signInWithPopup(provider).then(function(){
-      localStorage.removeItem('mt_login_pending');
-    }).catch(function(e){
-      // If popup blocked in PWA, redirect to Safari with instructions
-      if(e.code === 'auth/popup-blocked' || e.code === 'auth/cancelled-popup-request'){
-        localStorage.removeItem('mt_login_pending');
-        if(btn){ btn.textContent = 'Entrar com Google'; btn.disabled = false; }
-        // Show tip to user
-        var tip = document.getElementById('login-tip');
-        if(tip) tip.style.display = 'block';
-      } else {
-        if(btn){ btn.textContent = 'Entrar com Google'; btn.disabled = false; }
-        alert('Erro: ' + e.message);
-      }
-    });
-  } else if(isMobile){
-    var btn = document.querySelector('.login-btn');
-    if(btn){ btn.textContent = 'Redirecionando...'; btn.disabled = true; }
+  if(btn){ btn.textContent = 'Entrando...'; btn.disabled = true; }
+  if(isMobile){
     _auth.signInWithRedirect(_provider).catch(function(e){
       if(btn){ btn.textContent = 'Entrar com Google'; btn.disabled = false; }
-      alert('Erro no login: '+e.message);
+      alert('Erro: '+e.message);
     });
   } else {
     _auth.signInWithPopup(_provider).catch(function(e){
-      if(e.code === 'auth/popup-blocked'){
-        _auth.signInWithRedirect(_provider);
-      } else {
-        alert('Erro no login: '+e.message);
-      }
+      if(btn){ btn.textContent = 'Entrar com Google'; btn.disabled = false; }
+      if(e.code==='auth/popup-blocked') _auth.signInWithRedirect(_provider);
+      else if(e.code!=='auth/popup-closed-by-user') alert('Erro: '+e.message);
     });
   }
 }
 
-// When app regains focus (user comes back from Safari login)
-document.addEventListener('visibilitychange', function(){
-  if(!document.hidden && localStorage.getItem('mt_login_pending')){
-    localStorage.removeItem('mt_login_pending');
-    _auth.currentUser && _auth.currentUser.reload();
-  }
-});
 function fbLogout(){
   if(!confirm('Sair da conta?')) return;
   _auth.signOut();
 }
 
-// Handle redirect result after Google login on mobile
+function _initApp(user){
+  if(window._fbUser) return; // já inicializado
+  window._fbUser = user;
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-root').style.display = 'grid';
+  document.getElementById('user-name').textContent = user.displayName || user.email;
+  var av = document.getElementById('user-avatar');
+  if(user.photoURL){ av.src=user.photoURL; av.style.display='block'; }
+  var ref = window._db.collection('users').doc(user.uid).collection('data');
+  Promise.all([
+    ref.doc('mt_goals').get(),
+    ref.doc('mt_profile').get(),
+    ref.doc('mt_log').get()
+  ]).then(function(snaps){
+    if(snaps[0].exists) GOALS   = JSON.parse(snaps[0].data().value);
+    if(snaps[1].exists) PROFILE = JSON.parse(snaps[1].data().value);
+    if(snaps[2].exists) LOG     = JSON.parse(snaps[2].data().value);
+    curDate = todayStr(); curMeal = 0;
+    renderHoje();
+  }).catch(function(){
+    curDate = todayStr(); renderHoje();
+  });
+}
+
+// Resultado do redirect (mobile login)
 _auth.getRedirectResult().then(function(result){
-  if(result && result.user){
-    // User signed in via redirect - onAuthStateChanged will handle it
-    console.log('Redirect login successful');
-  }
+  if(result && result.user) _initApp(result.user);
 }).catch(function(e){
-  // Ignore errors when there's no redirect pending
-  if(e.code !== 'auth/no-current-user' && e.code !== 'auth/null-user'){
-    console.error('Redirect result error:', e.code, e.message);
-  }
+  if(e.code && e.code!=='auth/no-current-user') console.error('redirect:',e.code);
 });
 
+// Estado de autenticação (já logado / logout)
 _auth.onAuthStateChanged(function(user){
   if(user){
-    window._fbUser = user;
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app-root').style.display = 'grid';
-    document.getElementById('user-name').textContent = user.displayName || user.email;
-    var av = document.getElementById('user-avatar');
-    if(user.photoURL){ av.src=user.photoURL; av.style.display='block'; }
-    // Load data from Firestore then render
-    var ref = window._db.collection('users').doc(user.uid).collection('data');
-    Promise.all([
-      ref.doc('mt_goals').get(),
-      ref.doc('mt_profile').get(),
-      ref.doc('mt_log').get()
-    ]).then(function(snaps){
-      if(snaps[0].exists) GOALS   = JSON.parse(snaps[0].data().value);
-      if(snaps[1].exists) PROFILE = JSON.parse(snaps[1].data().value);
-      if(snaps[2].exists) LOG     = JSON.parse(snaps[2].data().value);
-      curDate = todayStr();
-      curMeal = 0;
-      renderHoje();
-    }).catch(function(e){
-      console.error('load error',e);
-      curDate = todayStr();
-      renderHoje();
-    });
+    _initApp(user);
   } else {
     window._fbUser = null;
     document.getElementById('login-screen').style.display = 'flex';
