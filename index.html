@@ -3,13 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f4f6f4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>MacroTrack — Plano 3300 kcal</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f4f6f4;--bg2:#ffffff;--bg3:#f0f2f0;--bg4:#e4e8e4;--border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);--text:#1a1f1a;--text2:#4a574a;--text3:#8a9a8a;--green:#1d8a45;--green-dim:rgba(29,138,69,0.10);--green-mid:rgba(29,138,69,0.20);--blue:#1a56a0;--blue-dim:rgba(26,86,160,0.10);--amber:#b06000;--amber-dim:rgba(176,96,0,0.10);--red:#c0392b;--red-dim:rgba(192,57,43,0.10);--purple:#6b3fa0;--purple-dim:rgba(107,63,160,0.10);--radius:12px;--radius-sm:8px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg3)}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
 .app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
 .sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:28px 0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;overflow-y:auto}
 .logo{padding:0 24px 28px;border-bottom:1px solid var(--border);margin-bottom:20px}
@@ -182,26 +185,17 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 <body>
 <div id="login-screen">
   <div class="login-card">
-    <div style="display:flex;align-items:center;justify-content:center;margin-bottom:16px"><svg width="48" height="48" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:8px;flex-shrink:0">
-  <rect width="48" height="48" rx="13" fill="var(--green)"/>
-  <path d="M9 26 L9 12 L15 20 L18 16 L21 20 L27 12 L27 26" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <circle cx="18" cy="10" r="2.5" fill="white" opacity="0.9"/>
-</svg></div><div class="login-logo">MacroTrack</div>
+    <svg width="52" height="52" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:12px"><rect width="36" height="36" rx="10" fill="var(--green)"/><path d="M9 26 L9 12 L15 20 L18 16 L21 20 L27 12 L27 26" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="18" cy="10" r="2.5" fill="white" opacity="0.9"/></svg><div class="login-logo">MacroTrack</div>
     <div class="login-sub">Seu plano alimentar personalizado<br>3.300 kcal · 175g proteína</div>
     <button class="login-btn" onclick="fbLogin()">
       <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
       Entrar com Google
     </button>
-    <p id="login-tip" style="display:none;margin-top:16px;font-size:12px;color:var(--text3);line-height:1.5">Para usar pelo atalho da tela inicial,<br>abra primeiro pelo <strong>Safari</strong> e faça login lá.</p>
   </div>
 </div>
 <div class="app" id="app-root" style="display:none">
   <nav class="sidebar">
-    <div class="logo"><div style="display:flex;align-items:center"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:8px;flex-shrink:0">
-  <rect width="36" height="36" rx="10" fill="var(--green)"/>
-  <path d="M9 26 L9 12 L15 20 L18 16 L21 20 L27 12 L27 26" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-  <circle cx="18" cy="10" r="2.5" fill="white" opacity="0.9"/>
-</svg><div class="logo-mark">MacroTrack</div></div><div class="logo-sub">3.300 kcal · 175g proteína</div></div>
+    <div class="logo"><div style="display:flex;align-items:center"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:8px;flex-shrink:0"><rect width="36" height="36" rx="10" fill="var(--green)"/><path d="M9 26 L9 12 L15 20 L18 16 L21 20 L27 12 L27 26" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="18" cy="10" r="2.5" fill="white" opacity="0.9"/></svg><div class="logo-mark">MacroTrack</div></div><div class="logo-sub">3.300 kcal · 175g proteína</div></div>
     <div class="nav-section">
       <div class="nav-label">Principal</div>
       <button class="nav-btn active" onclick="goTo('hoje')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 2v2M11 2v2M2 7h12"/></svg>Hoje</button>
@@ -569,63 +563,39 @@ var _auth = firebase.auth();
 var _provider = new firebase.auth.GoogleAuthProvider();
 
 function fbLogin(){
-  var btn = document.querySelector('.login-btn');
-  var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  if(btn){ btn.textContent = 'Entrando...'; btn.disabled = true; }
-  if(isMobile){
-    _auth.signInWithRedirect(_provider).catch(function(e){
-      if(btn){ btn.textContent = 'Entrar com Google'; btn.disabled = false; }
-      alert('Erro: '+e.message);
-    });
-  } else {
-    _auth.signInWithPopup(_provider).catch(function(e){
-      if(btn){ btn.textContent = 'Entrar com Google'; btn.disabled = false; }
-      if(e.code==='auth/popup-blocked') _auth.signInWithRedirect(_provider);
-      else if(e.code!=='auth/popup-closed-by-user') alert('Erro: '+e.message);
-    });
-  }
+  _auth.signInWithPopup(_provider).catch(function(e){alert('Erro no login: '+e.message);});
 }
-
 function fbLogout(){
   if(!confirm('Sair da conta?')) return;
   _auth.signOut();
 }
 
-function _initApp(user){
-  if(window._fbUser) return; // já inicializado
-  window._fbUser = user;
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app-root').style.display = 'grid';
-  document.getElementById('user-name').textContent = user.displayName || user.email;
-  var av = document.getElementById('user-avatar');
-  if(user.photoURL){ av.src=user.photoURL; av.style.display='block'; }
-  var ref = window._db.collection('users').doc(user.uid).collection('data');
-  Promise.all([
-    ref.doc('mt_goals').get(),
-    ref.doc('mt_profile').get(),
-    ref.doc('mt_log').get()
-  ]).then(function(snaps){
-    if(snaps[0].exists) GOALS   = JSON.parse(snaps[0].data().value);
-    if(snaps[1].exists) PROFILE = JSON.parse(snaps[1].data().value);
-    if(snaps[2].exists) LOG     = JSON.parse(snaps[2].data().value);
-    curDate = todayStr(); curMeal = 0;
-    renderHoje();
-  }).catch(function(){
-    curDate = todayStr(); renderHoje();
-  });
-}
-
-// Resultado do redirect (mobile login)
-_auth.getRedirectResult().then(function(result){
-  if(result && result.user) _initApp(result.user);
-}).catch(function(e){
-  if(e.code && e.code!=='auth/no-current-user') console.error('redirect:',e.code);
-});
-
-// Estado de autenticação (já logado / logout)
 _auth.onAuthStateChanged(function(user){
   if(user){
-    _initApp(user);
+    window._fbUser = user;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-root').style.display = 'grid';
+    document.getElementById('user-name').textContent = user.displayName || user.email;
+    var av = document.getElementById('user-avatar');
+    if(user.photoURL){ av.src=user.photoURL; av.style.display='block'; }
+    // Load data from Firestore then render
+    var ref = window._db.collection('users').doc(user.uid).collection('data');
+    Promise.all([
+      ref.doc('mt_goals').get(),
+      ref.doc('mt_profile').get(),
+      ref.doc('mt_log').get()
+    ]).then(function(snaps){
+      if(snaps[0].exists) GOALS   = JSON.parse(snaps[0].data().value);
+      if(snaps[1].exists) PROFILE = JSON.parse(snaps[1].data().value);
+      if(snaps[2].exists) LOG     = JSON.parse(snaps[2].data().value);
+      curDate = todayStr();
+      curMeal = 0;
+      renderHoje();
+    }).catch(function(e){
+      console.error('load error',e);
+      curDate = todayStr();
+      renderHoje();
+    });
   } else {
     window._fbUser = null;
     document.getElementById('login-screen').style.display = 'flex';
