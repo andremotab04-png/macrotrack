@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#f4f6f4">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>MacroTrack — Plano 3300 kcal</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -149,6 +148,12 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
 .bar-col-bar{width:100%;border-radius:3px 3px 0 0;min-height:2px}
 .bar-col-label{font-size:9px;color:var(--text3);font-family:'DM Mono',monospace}
+.chart-tooltip{position:fixed;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 10px;font-size:12px;font-family:'DM Mono',monospace;color:var(--text);pointer-events:none;opacity:0;transition:opacity .15s;z-index:1000;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.chart-tooltip.visible{opacity:1}
+.bar-col{position:relative}
+.bar-col-bar{cursor:pointer;transition:opacity .15s}
+.bar-col-bar:hover{opacity:1!important;filter:brightness(1.1)}
+
 /* profile */
 .profile-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:16px}
 .profile-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:16px}
@@ -185,8 +190,8 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 <body>
 <div id="login-screen">
   <div class="login-card">
-    <svg width="52" height="52" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:12px"><rect width="36" height="36" rx="10" fill="var(--green)"/><path d="M9 26 L9 12 L15 20 L18 16 L21 20 L27 12 L27 26" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="18" cy="10" r="2.5" fill="white" opacity="0.9"/></svg><div class="login-logo">MacroTrack</div>
-    <div class="login-sub">Seu plano alimentar personalizado<br>3.300 kcal · 175g proteína</div>
+    <svg width="52" height="52" viewBox="0 0 36 36" fill="none" style="margin-bottom:12px"><rect width="36" height="36" rx="10" fill="var(--green)"/><path d="M9 26 L9 12 L15 20 L18 16 L21 20 L27 12 L27 26" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="18" cy="10" r="2.5" fill="white" opacity="0.9"/></svg><div class="login-logo">MacroTrack</div>
+    
     <button class="login-btn" onclick="fbLogin()">
       <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
       Entrar com Google
@@ -195,7 +200,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
 </div>
 <div class="app" id="app-root" style="display:none">
   <nav class="sidebar">
-    <div class="logo"><div style="display:flex;align-items:center"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:8px;flex-shrink:0"><rect width="36" height="36" rx="10" fill="var(--green)"/><path d="M9 26 L9 12 L15 20 L18 16 L21 20 L27 12 L27 26" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="18" cy="10" r="2.5" fill="white" opacity="0.9"/></svg><div class="logo-mark">MacroTrack</div></div><div class="logo-sub">3.300 kcal · 175g proteína</div></div>
+    <div class="logo"><div style="display:flex;align-items:center"><svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;margin-right:8px;flex-shrink:0"><rect width="36" height="36" rx="10" fill="var(--green)"/><path d="M9 26 L9 12 L15 20 L18 16 L21 20 L27 12 L27 26" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="18" cy="10" r="2.5" fill="white" opacity="0.9"/></svg><div class="logo-mark">MacroTrack</div></div></div>
     <div class="nav-section">
       <div class="nav-label">Principal</div>
       <button class="nav-btn active" onclick="goTo('hoje')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 2v2M11 2v2M2 7h12"/></svg>Hoje</button>
@@ -292,6 +297,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
     </div></main>
 </div>
 <div class="toast" id="toast"></div>
+<div class="chart-tooltip" id="chart-tooltip"></div>
 
 <script>
 const FOODS={
@@ -519,11 +525,30 @@ function jumpDate(d){curDate=d;sel={prot:{},carb:{},fat:{},veg:{}};curMeal=0;goT
 // ── CHARTS ───────────────────────────────────────────────────────────────────
 function renderCharts(){
   const d14=[];for(let i=13;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);d14.push(d.toISOString().slice(0,10));}
-  function bar(id,data,ref,color){const el=document.getElementById(id);if(!el)return;const mx=Math.max(...data.map(x=>x.v),ref*.2);el.innerHTML=data.map(x=>{const h=mx>0?Math.round(x.v/mx*80):0;return `<div class="bar-col"><div class="bar-col-bar" style="height:${h}px;background:${color};opacity:${x.v>0?1:0.18}"></div><div class="bar-col-label">${x.l}</div></div>`;}).join('');}
-  bar('ch-kcal',d14.map(d=>({v:(LOG[d]?.totals?.kcal)||0,l:d.slice(8)})),GOALS.kcal,'#3de87a');
-  bar('ch-prot',d14.map(d=>({v:(LOG[d]?.totals?.prot)||0,l:d.slice(8)})),GOALS.prot,'#5b9cf6');
-  bar('ch-carb',d14.map(d=>({v:(LOG[d]?.totals?.carb)||0,l:d.slice(8)})),GOALS.carb,'#f5a623');
-  bar('ch-fat', d14.map(d=>({v:(LOG[d]?.totals?.fat)||0, l:d.slice(8)})),GOALS.fat, '#a78bfa');
+  function bar(id,data,ref,color,unit){
+    const el=document.getElementById(id);if(!el)return;
+    const mx=Math.max(...data.map(x=>x.v),ref*.2);
+    const tt=document.getElementById('chart-tooltip');
+    el.innerHTML=data.map(x=>{
+      const h=mx>0?Math.round(x.v/mx*80):0;
+      const val=x.v>0?x.v:null;
+      const tip=val?(x.l+'/mar: '+(unit==='kcal'?val+' kcal':val+'g')):'';
+      return `<div class="bar-col">
+        <div class="bar-col-bar" style="height:${h}px;background:${color};opacity:${x.v>0?1:0.18}"
+          data-tip="${tip}"
+          onmouseenter="showTip(event,this)"
+          onmouseleave="hideTip()"
+          ontouchstart="showTip(event,this)"
+          ontouchend="hideTip()">
+        </div>
+        <div class="bar-col-label">${x.l}</div>
+      </div>`;
+    }).join('');
+  }
+  bar('ch-kcal',d14.map(d=>({v:(LOG[d]?.totals?.kcal)||0,l:d.slice(8)})),GOALS.kcal,'#3de87a','kcal');
+  bar('ch-prot',d14.map(d=>({v:(LOG[d]?.totals?.prot)||0,l:d.slice(8)})),GOALS.prot,'#5b9cf6','g');
+  bar('ch-carb',d14.map(d=>({v:(LOG[d]?.totals?.carb)||0,l:d.slice(8)})),GOALS.carb,'#f5a623','g');
+  bar('ch-fat', d14.map(d=>({v:(LOG[d]?.totals?.fat)||0, l:d.slice(8)})),GOALS.fat, '#a78bfa','g');
   const ok=d14.filter(d=>LOG[d]?.totals?.kcal>GOALS.kcal*.85).length;
   document.getElementById('compliance').innerHTML=`<div style="display:flex;align-items:center;gap:12px;margin:8px 0"><div style="font-size:28px;font-weight:600;color:var(--green);font-family:'DM Mono',monospace">${ok}</div><div style="font-size:13px;color:var(--text2)">de 14 dias acima de 85% da meta calórica</div></div><div style="height:8px;background:var(--bg4);border-radius:4px;overflow:hidden"><div style="height:100%;width:${Math.round(ok/14*100)}%;background:var(--green);border-radius:4px"></div></div>`;
 }
@@ -546,6 +571,22 @@ function renderMetas(){
 function saveMetas(){GOALS={kcal:Number(document.getElementById('m-kcal').value),prot:Number(document.getElementById('m-prot').value),carb:Number(document.getElementById('m-carb').value),fat:Number(document.getElementById('m-fat').value)};save('mt_goals',GOALS);renderHoje();toast('Metas salvas!',true);}
 
 // ── TOAST ─────────────────────────────────────────────────────────────────────
+function showTip(e,el){
+  var tt=document.getElementById('chart-tooltip');
+  var tip=el.getAttribute('data-tip');
+  if(!tip)return;
+  tt.textContent=tip;
+  tt.classList.add('visible');
+  var x=e.touches?e.touches[0].clientX:e.clientX;
+  var y=e.touches?e.touches[0].clientY:e.clientY;
+  tt.style.left=Math.min(x+12,window.innerWidth-150)+'px';
+  tt.style.top=(y-40)+'px';
+}
+function hideTip(){
+  var tt=document.getElementById('chart-tooltip');
+  tt.classList.remove('visible');
+}
+
 function toast(msg,ok=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(ok?' ok':' err');setTimeout(()=>{t.className='toast';},2800);}
 
 // ── FIREBASE INIT (compat SDK - single script, no modules) ──────────────
