@@ -347,7 +347,7 @@ const FOODS={
   prot:[
     {name:"Peito de frango grelhado",p:31,c:0,  f:3.6,unit:"g", def:180},
     {name:"Frango desfiado",         p:29,c:0,  f:4,  unit:"g", def:150},
-    {name:"Carne moída (patinho)",   p:26,c:0,  f:8,  unit:"g", def:150},
+    {name:"Carne moída (acém)",      p:22,c:0,  f:15, unit:"g", def:150},
     {name:"Bisteca bovina",          p:27,c:0,  f:9,  unit:"g", def:180},
     {name:"Contrafilé grelhado",     p:28,c:0,  f:10, unit:"g", def:180},
     {name:"Carne de panela",         p:30,c:0,  f:7,  unit:"g", def:180},
@@ -374,6 +374,7 @@ const FOODS={
     {name:"Kiwi",                    p:1, c:15, f:0.5,unit:"un",def:2,pu:80},
     {name:"Abacaxi",                 p:0.5,c:13,f:0.1,unit:"g", def:150},
     {name:"Melão",                   p:0.5,c:8, f:0.2,unit:"g", def:200},
+    {name:"Maçã",                    p:0.3,c:14,f:0.2,unit:"un",def:1,pu:130},
     {name:"Tapioca (goma seca)",     p:0, c:85, f:0.3,unit:"g", def:60},
   ],
   fat:[
@@ -382,10 +383,14 @@ const FOODS={
     {name:"Abacate",                 p:2, c:9,  f:15, unit:"g", def:80},
     {name:"Mix de nuts",              p:15,c:20, f:55, unit:"g", def:30},
     {name:"Coco ralado",             p:3, c:6,  f:35, unit:"g", def:20},
+    {name:"Óleo de coco",            p:0, c:0,  f:100,unit:"ml",def:10},
+    {name:"Creme de leite",          p:2, c:3,  f:25, unit:"g", def:40},
   ],
   veg:[
     {name:"Tomate",                  p:1, c:4,  f:0.2,unit:"g", def:100},
     {name:"Cenoura",                 p:1, c:8,  f:0.2,unit:"g", def:80},
+    {name:"Cebola",                  p:1, c:9,  f:0.1,unit:"g", def:80},
+    {name:"Farofa tradicional",      p:4, c:45, f:8,  unit:"g", def:30},
   ]
 };
 
@@ -557,7 +562,7 @@ function saveMeal(){
 var _DB=[
   {t:['frango','peito de frango','frango grelhado','frango cozido','franguinho'],p:31,c:0,f:3.6,k:165},
   {t:['frango desfiado'],p:29,c:0,f:4,k:153},
-  {t:['carne moida','carne moída','patinho','carne picada'],p:26,c:0,f:8,k:176},
+  {t:['carne moida','carne moída','acem','acém','carne picada'],p:22,c:0,f:15,k:225},
   {t:['bisteca'],p:27,c:0,f:9,k:188},
   {t:['contrafile','contrafilé','bife'],p:28,c:0,f:10,k:200},
   {t:['carne de panela','carne cozida','carne assada','carne bovina'],p:30,c:0,f:7,k:181},
