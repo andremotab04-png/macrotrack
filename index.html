@@ -679,26 +679,17 @@ function parseRefeicao(){
     var q=_extractQty(_norm(part));
     var grams=100,display='100g';
     if(q){
-      if(q.isUnit){
-        grams=food.pu?(q.raw*food.pu):(q.raw*100);
-        display=q.raw+(food.u||'un');
-      } else {
-        grams=q.grams;
-        display=grams+'g';
-      }
-    } else if(food.u==='un'&&food.pu){
-      grams=food.pu; display='1 un';
-    }
+      if(q.isUnit){grams=food.pu?(q.raw*food.pu):(q.raw*100);display=q.raw+(food.u||'un');}
+      else{grams=q.grams;display=grams+'g';}
+    } else if(food.u==='un'&&food.pu){grams=food.pu;display='1 un';}
     var f=grams/100;
-    items.push({
-      name:food.t[0],display:display,
+    items.push({name:food.t[0],display:display,
       kcal:Math.round((food.p*4+food.c*4+food.f*9)*f),
       prot:Math.round(food.p*f*10)/10,
       carb:Math.round(food.c*f*10)/10,
-      fat:Math.round(food.f*f*10)/10
-    });
+      fat:Math.round(food.f*f*10)/10});
   }
-  if(items.length===0){toast('Nenhum alimento reconhecido — tente descrever de outra forma');return;}
+  if(items.length===0){toast('Nenhum alimento reconhecido');return;}
   var tot={kcal:0,prot:0,carb:0,fat:0};
   items.forEach(function(it){tot.kcal+=it.kcal;tot.prot+=it.prot;tot.carb+=it.carb;tot.fat+=it.fat;});
   tot.kcal=Math.round(tot.kcal);
@@ -706,11 +697,30 @@ function parseRefeicao(){
   tot.carb=Math.round(tot.carb*10)/10;
   tot.fat=Math.round(tot.fat*10)/10;
   _aiPend={items:items,totals:tot,label:items.slice(0,3).map(function(i){return i.name;}).join(', ')+(items.length>3?' +'+(items.length-3):'')};
-  document.getElementById('ai-items').innerHTML=items.map(function(it){
-    return '<div class="ai-item"><span>'+it.display+' '+it.name+'</span><span style="font-family:'DM Mono',monospace;color:var(--text3)">'+it.prot+'p · '+it.carb+'c · '+it.fat+'g · '+it.kcal+'kcal</span></div>';
-  }).join('');
-  document.getElementById('ai-total').innerHTML='<span style="color:var(--text2)">Total</span><span style="font-family:'DM Mono',monospace;color:var(--green)">'+tot.prot+'g prot · '+tot.carb+'g carb · '+tot.fat+'g gord · '+tot.kcal+' kcal</span>';
-  document.getElementById('ai-warn').textContent=unrecognized.length?'Não reconhecido: '+unrecognized.join(', '):'';
+  // Render items list
+  var aiEl=document.getElementById('ai-items');
+  aiEl.innerHTML='';
+  items.forEach(function(it){
+    var row=document.createElement('div');
+    row.className='ai-item';
+    var nm=document.createElement('span');
+    nm.textContent=it.display+' '+it.name;
+    var vl=document.createElement('span');
+    vl.textContent=it.prot+'p · '+it.carb+'c · '+it.fat+'g · '+it.kcal+'kcal';
+    vl.style.color='var(--text3)';
+    row.appendChild(nm);row.appendChild(vl);
+    aiEl.appendChild(row);
+  });
+  // Render total
+  var totEl=document.getElementById('ai-total');
+  totEl.innerHTML='';
+  var lb=document.createElement('span');lb.textContent='Total';lb.style.color='var(--text2)';
+  var vb=document.createElement('span');
+  vb.textContent=tot.prot+'g prot · '+tot.carb+'g carb · '+tot.fat+'g gord · '+tot.kcal+' kcal';
+  vb.style.color='var(--green)';
+  totEl.appendChild(lb);totEl.appendChild(vb);
+  // Unrecognized
+  document.getElementById('ai-warn').textContent=unrecognized.length?'Nao reconhecido: '+unrecognized.join(', '):'';
   document.getElementById('ai-preview').style.display='block';
 }
 
