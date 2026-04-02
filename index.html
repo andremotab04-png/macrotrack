@@ -570,7 +570,7 @@ function renderFoodLists(){
     document.getElementById('list-'+grp).innerHTML=FOODS[grp].map((food,i)=>{
       const key=grp+'_'+i;const sel2=!!sel[grp][key];
       const kc=food.pu?Math.round((food.p*4+food.c*4+food.f*9)*food.pu/100)+' kcal/un':Math.round((food.p*4+food.c*4+food.f*9))+' kcal/100g';
-      return '<div class="food-item'+(sel2?' selected':'')+'" onclick="toggleFood(''+grp+'','+i+')"><span class="food-item-name">'+food.name+'</span><span class="food-badge '+(grp==='veg'?'veg':grp)+'">'+kc+'</span></div>';
+      return '<div class="food-item'+(sel2?' selected':'')+'" onclick="toggleFood(\''+(grp)+'\','+i+')"><span class="food-item-name">'+food.name+'</span><span class="food-badge '+(grp==='veg'?'veg':grp)+'">'+kc+'</span></div>';
     }).join('');
     var cnt=document.getElementById('cnt-'+grp);
     if(cnt) cnt.textContent=selCount>0?selCount+' sel':'';
@@ -615,7 +615,7 @@ function filterFoods(q){
       if(food.name.toLowerCase().indexOf(ql)>=0){
         var sel2=!!sel[grp][grp+'_'+i];
         var kc=food.pu?Math.round((food.p*4+food.c*4+food.f*9)*food.pu/100)+' kcal/un':Math.round((food.p*4+food.c*4+food.f*9))+' kcal/100g';
-        html+='<div class="food-item'+(sel2?' selected':'')+'" onclick="toggleFood(''+grp+'','+i+');filterFoods(document.getElementById('food-search').value)"><span class="food-item-name">'+food.name+'</span><span class="food-badge '+(grp==='veg'?'veg':grp)+'">'+kc+'</span></div>';
+        html+='<div class="food-item'+(sel2?' selected':'')+'" onclick="toggleFood(\''+grp+'\','+i+');filterFoods(document.getElementById(\'food-search\').value)"><span class="food-item-name">'+food.name+'</span><span class="food-badge '+(grp==='veg'?'veg':grp)+'">'+kc+'</span></div>';
         found++;
       }
     });
