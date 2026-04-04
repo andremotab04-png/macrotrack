@@ -277,6 +277,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       <div class="nav-label">Configurar</div>
       <button class="nav-btn" onclick="goTo('perfil')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>Perfil</button>
       <button class="nav-btn" onclick="goTo('metas')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="3"/></svg>Metas</button>
+      <button class="nav-btn" onclick="goTo('medidas')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 8h12M8 2v12"/><circle cx="8" cy="8" r="3"/></svg>Medidas</button>
     </div>
     <div class="sidebar-date"><div class="sidebar-date-label">Hoje <span class="sync-dot" id="sync-dot"></span></div><div class="sidebar-date-val" id="sb-date">—</div></div>
     <div class="user-row"><img class="user-avatar" id="user-avatar" src="" alt=""><span class="user-name" id="user-name">—</span><button class="logout-btn" onclick="fbLogout()">sair</button></div>
@@ -285,7 +286,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
   <main class="main">
     <!-- HOJE -->
     <div class="page active" id="page-hoje">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px">
+      <div class="page-header-row" style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px">
         <div><div class="page-title">Registro do dia</div><div style="font-size:13px;color:var(--text3);margin-top:4px" id="today-label">—</div></div>
         <div class="date-nav"><button onclick="changeDay(-1)">&#8592;</button><div class="date-display" id="date-display">—</div><button onclick="changeDay(1)">&#8594;</button><button class="date-today" onclick="goToday()">hoje</button></div>
       </div>
@@ -403,8 +404,76 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         <div style="margin-top:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px" id="meta-meals"></div>
         <button class="profile-save" onclick="saveMetas()" style="margin-top:16px">Salvar</button>
       </div>
+
+    <!-- MEDIDAS CORPORAIS -->
+    <div class="page" id="page-medidas">
+      <div class="page-title">Medidas corporais</div>
+      <div class="page-sub">Acompanhe sua evolução física ao longo do tempo</div>
+
+      <!-- REGISTRAR NOVA MEDIDA -->
+      <div class="meas-card">
+        <div class="meas-title">
+          <span>Nova medição</span>
+          <span style="font-size:11px;color:var(--text3);font-weight:400" id="meas-date-label"></span>
+        </div>
+        <div class="meas-grid">
+          <div class="meas-field"><label>Peso (kg)</label><input type="number" id="mf-peso" step="0.1" placeholder="0.0"></div>
+          <div class="meas-field"><label>Tórax (cm)</label><input type="number" id="mf-torax" step="0.1" placeholder="0.0"></div>
+          <div class="meas-field"><label>Cintura (cm)</label><input type="number" id="mf-cintura" step="0.1" placeholder="0.0"></div>
+          <div class="meas-field"><label>Abdômen (cm)</label><input type="number" id="mf-abdomen" step="0.1" placeholder="0.0"></div>
+          <div class="meas-field"><label>Quadril (cm)</label><input type="number" id="mf-quadril" step="0.1" placeholder="0.0"></div>
+          <div class="meas-field"><label>Braço Dir. Relax. (cm)</label><input type="number" id="mf-bdr" step="0.1" placeholder="0.0"></div>
+          <div class="meas-field"><label>Braço Dir. Contr. (cm)</label><input type="number" id="mf-bdc" step="0.1" placeholder="0.0"></div>
+          <div class="meas-field"><label>Braço Esq. Relax. (cm)</label><input type="number" id="mf-ber" step="0.1" placeholder="0.0"></div>
+          <div class="meas-field"><label>Braço Esq. Contr. (cm)</label><input type="number" id="mf-bec" step="0.1" placeholder="0.0"></div>
+          <div class="meas-field"><label>Coxa Dir. (cm)</label><input type="number" id="mf-cxd" step="0.1" placeholder="0.0"></div>
+          <div class="meas-field"><label>Coxa Esq. (cm)</label><input type="number" id="mf-cxe" step="0.1" placeholder="0.0"></div>
+          <div class="meas-field"><label>Panturrilha Dir. (cm)</label><input type="number" id="mf-pnd" step="0.1" placeholder="0.0"></div>
+        </div>
+        <!-- FOTOS -->
+        <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Fotos do dia</div>
+        <label class="meas-photo-area" for="meas-photo-input">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--text3)" stroke-width="1.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <div class="meas-photo-label">Toque para adicionar fotos</div>
+        </label>
+        <input type="file" id="meas-photo-input" accept="image/*" multiple style="display:none" onchange="addMeasPhotos(this)">
+        <div class="meas-photos-grid" id="meas-photos-preview"></div>
+        <button class="profile-save" onclick="saveMedida()" style="width:100%;margin-top:4px">Salvar medição</button>
+      </div>
+
+      <!-- HISTÓRICO DE MEDIDAS -->
+      <div class="meas-card">
+        <div class="meas-title">Histórico</div>
+        <div id="meas-history-list"><div style="font-size:13px;color:var(--text3);padding:8px 0">Nenhuma medição registrada ainda.</div></div>
+      </div>
+    </div>
     </div></main>
 </div>
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-nav">
+  <div class="mobile-nav-inner">
+    <button class="mobile-nav-btn active" id="mnav-hoje" onclick="goTo('hoje')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="2"/><path d="M5 2v2M11 2v2M2 7h12"/></svg>
+      Hoje
+    </button>
+    <button class="mobile-nav-btn" id="mnav-historico" onclick="goTo('historico')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+      Histórico
+    </button>
+    <button class="mobile-nav-btn" id="mnav-graficos" onclick="goTo('graficos')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l4-4 3 3 5-6"/></svg>
+      Gráficos
+    </button>
+    <button class="mobile-nav-btn" id="mnav-medidas" onclick="goTo('medidas')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 13V3l10 5-10 5z"/></svg>
+      Medidas
+    </button>
+    <button class="mobile-nav-btn" id="mnav-perfil" onclick="goTo('perfil')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>
+      Perfil
+    </button>
+  </div>
+</nav>
 <div class="toast" id="toast"></div>
 <div class="chart-tooltip" id="chart-tooltip"></div>
 
@@ -535,6 +604,7 @@ let curDate=todayStr(),curMeal=0,sel={prot:{},carb:{},fat:{},veg:{}};
 let GOALS=load('mt_goals')||{kcal:3300,prot:175,carb:415,fat:85};
 let PROFILE=load('mt_profile')||{nome:'',idade:22,peso:70,altura:184,obj:'massa',atv:'moderado'};
 let LOG=load('mt_log')||{};
+let MEDIDAS=load('mt_medidas')||[];
 
 function todayStr(){return new Date().toISOString().slice(0,10);}
 function save(k,v){
@@ -557,8 +627,11 @@ function goTo(p){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b=>{if(b.getAttribute('onclick')===`goTo('${p}')`)b.classList.add('active');});
-  if(p==='historico')renderHist();if(p==='graficos')renderCharts();if(p==='perfil')renderPerfil();if(p==='metas')renderMetas();
+  document.querySelectorAll('.nav-btn').forEach(b=>{if(b.getAttribute('onclick')==="goTo('"+p+"')")b.classList.add('active');});
+  // mobile nav
+  document.querySelectorAll('.mobile-nav-btn').forEach(b=>b.classList.remove('active'));
+  var mb=document.getElementById('mnav-'+p);if(mb)mb.classList.add('active');
+  if(p==='historico')renderHist();if(p==='graficos')renderCharts();if(p==='perfil')renderPerfil();if(p==='metas')renderMetas();if(p==='medidas')renderMedidas();
 }
 
 function changeDay(d){const dt=new Date(curDate+'T12:00:00');dt.setDate(dt.getDate()+d);curDate=dt.toISOString().slice(0,10);sel={prot:{},carb:{},fat:{},veg:{}};curMeal=0;renderHoje();}
@@ -828,6 +901,85 @@ function hideTip(){
 
 function toast(msg,ok=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(ok?' ok':' err');setTimeout(()=>{t.className='toast';},2800);}
 
+
+// ── MEDIDAS CORPORAIS ────────────────────────────────────────────────────
+let MEDIDAS = [];
+let _measPhotos = []; // base64 photos for current entry
+
+function renderMedidas(){
+  document.getElementById('meas-date-label').textContent = todayStr();
+  renderMeasHistory();
+}
+
+function addMeasPhotos(input){
+  var files = Array.from(input.files);
+  var preview = document.getElementById('meas-photos-preview');
+  files.forEach(function(file){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      _measPhotos.push(e.target.result);
+      var img = document.createElement('img');
+      img.className = 'meas-photo-thumb';
+      img.src = e.target.result;
+      img.onclick = function(){ window.open(e.target.result,'_blank'); };
+      preview.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+}
+
+function saveMedida(){
+  var fields = ['peso','torax','cintura','abdomen','quadril','bdr','bdc','ber','bec','cxd','cxe','pnd'];
+  var labels = ['Peso','Torax','Cintura','Abdomen','Quadril','Braco D Rel','Braco D Con','Braco E Rel','Braco E Con','Coxa D','Coxa E','Panturrilha D'];
+  var entry = { date: todayStr(), vals: {}, photos: _measPhotos.slice() };
+  var hasAny = false;
+  fields.forEach(function(f,i){
+    var v = parseFloat(document.getElementById('mf-'+f).value);
+    if(!isNaN(v) && v > 0){ entry.vals[f] = v; hasAny = true; }
+  });
+  if(!hasAny){ toast('Preencha pelo menos uma medida'); return; }
+  // Remove existing entry for same date
+  MEDIDAS = MEDIDAS.filter(function(m){ return m.date !== entry.date; });
+  MEDIDAS.unshift(entry);
+  save('mt_medidas', MEDIDAS);
+  // Clear form
+  fields.forEach(function(f){ document.getElementById('mf-'+f).value = ''; });
+  document.getElementById('meas-photos-preview').innerHTML = '';
+  _measPhotos = [];
+  renderMeasHistory();
+  toast('Medidas salvas!', true);
+}
+
+function renderMeasHistory(){
+  var el = document.getElementById('meas-history-list');
+  if(!MEDIDAS.length){
+    el.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:8px 0">Nenhuma medicao registrada ainda.</div>';
+    return;
+  }
+  var fieldMap = {peso:'Peso',torax:'Torax',cintura:'Cintura',abdomen:'Abdomen',quadril:'Quadril',bdr:'B.D.Rel',bdc:'B.D.Con',ber:'B.E.Rel',bec:'B.E.Con',cxd:'Coxa D',cxe:'Coxa E',pnd:'Pant.D'};
+  el.innerHTML = MEDIDAS.map(function(m,idx){
+    var d = new Date(m.date+'T12:00:00');
+    var dlbl = d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+    var vals = Object.keys(m.vals).map(function(k){
+      var unit = k==='peso'?'kg':'cm';
+      return (fieldMap[k]||k)+': '+m.vals[k]+unit;
+    }).join(' · ');
+    var photos = (m.photos||[]).map(function(src){
+      return '<img class="meas-photo-thumb" src="'+src+'" onclick="window.open(''+src+'','_blank')" style="width:56px;height:56px;margin-right:4px;margin-top:6px">';
+    }).join('');
+    return '<div class="meas-history-item"><div class="meas-history-date"><span>'+dlbl+'</span><button class="meas-del-btn" onclick="delMedida('+idx+')">remover</button></div><div class="meas-history-vals">'+vals+'</div>'+(photos?'<div style="display:flex;flex-wrap:wrap">'+photos+'</div>':'')+'</div>';
+  }).join('');
+}
+
+function delMedida(idx){
+  if(!confirm('Remover esta medição?')) return;
+  MEDIDAS.splice(idx,1);
+  save('mt_medidas', MEDIDAS);
+  renderMeasHistory();
+  toast('Medição removida');
+}
+
 // ── FIREBASE INIT (compat SDK - single script, no modules) ──────────────
 var firebaseConfig = {
   apiKey: "AIzaSyCHfZitelDoVLrtEVEWE4FXjorPC_A5neU",
@@ -863,11 +1015,13 @@ _auth.onAuthStateChanged(function(user){
     Promise.all([
       ref.doc('mt_goals').get(),
       ref.doc('mt_profile').get(),
-      ref.doc('mt_log').get()
+      ref.doc('mt_log').get(),
+      ref.doc('mt_medidas').get()
     ]).then(function(snaps){
       if(snaps[0].exists) GOALS   = JSON.parse(snaps[0].data().value);
       if(snaps[1].exists) PROFILE = JSON.parse(snaps[1].data().value);
       if(snaps[2].exists) LOG     = JSON.parse(snaps[2].data().value);
+      if(snaps[3].exists) MEDIDAS = JSON.parse(snaps[3].data().value);
       curDate = todayStr();
       curMeal = 0;
       renderHoje();
