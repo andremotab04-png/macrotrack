@@ -965,12 +965,16 @@ function renderMeasHistory(){
       var unit = k==='peso'?'kg':'cm';
       return (fieldMap[k]||k)+': '+m.vals[k]+unit;
     }).join(' · ');
-    var photos = (m.photos||[]).map(function(src){
-      return '<img class="meas-photo-thumb" src="'+src+'" onclick="window.open(''+src+'','_blank')" style="width:56px;height:56px;margin-right:4px;margin-top:6px">';
-    }).join('');
+    var photoEls = '';
+    (m.photos||[]).forEach(function(src){
+      photoEls += '<img class="meas-photo-thumb" src="'+src+'" style="width:56px;height:56px;margin-right:4px;margin-top:6px;border-radius:6px;cursor:pointer" onclick="openPhoto(this.src)">';
+    });
+    var photos = photoEls;
     return '<div class="meas-history-item"><div class="meas-history-date"><span>'+dlbl+'</span><button class="meas-del-btn" onclick="delMedida('+idx+')">remover</button></div><div class="meas-history-vals">'+vals+'</div>'+(photos?'<div style="display:flex;flex-wrap:wrap">'+photos+'</div>':'')+'</div>';
   }).join('');
 }
+
+function openPhoto(src){window.open(src,"_blank");}
 
 function delMedida(idx){
   if(!confirm('Remover esta medição?')) return;
