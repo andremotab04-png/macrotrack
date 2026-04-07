@@ -288,6 +288,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       <div class="nav-label">Configurar</div>
       <button class="nav-btn" onclick="goTo('perfil')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>Perfil</button>
       <button class="nav-btn" onclick="goTo('metas')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="3"/></svg>Metas</button>
+      <button class="nav-btn" onclick="goTo('peso')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12 Q8 4 14 12"/><path d="M8 8v4"/></svg>Peso</button>
     </div>
     <div class="sidebar-date"><div class="sidebar-date-label">Hoje <span class="sync-dot" id="sync-dot"></span></div><div class="sidebar-date-val" id="sb-date">—</div></div>
     <div class="user-row"><img class="user-avatar" id="user-avatar" src="" alt=""><span class="user-name" id="user-name">—</span><button class="logout-btn" onclick="fbLogout()">sair</button></div>
@@ -414,6 +415,33 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         <div style="margin-top:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px" id="meta-meals"></div>
         <button class="profile-save" onclick="saveMetas()" style="margin-top:16px">Salvar</button>
       </div>
+    <!-- PESO -->
+    <div class="page" id="page-peso">
+      <div class="page-title">Peso corporal</div>
+      <div class="page-sub">Acompanhe sua evolução ao longo do tempo</div>
+      <div class="profile-card">
+        <div class="profile-title">Registrar pesagem</div>
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+          <div class="profile-field" style="flex:1;min-width:120px">
+            <label>Data</label>
+            <input type="date" id="peso-data" style="width:100%;padding:8px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:'Sora',sans-serif;font-size:13px">
+          </div>
+          <div class="profile-field" style="flex:1;min-width:100px">
+            <label>Peso (kg)</label>
+            <input type="number" id="peso-val" step="0.1" placeholder="0.0" style="width:100%;padding:8px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Mono',monospace;font-size:13px">
+          </div>
+          <button class="profile-save" onclick="savePeso()" style="margin-bottom:0;white-space:nowrap">Salvar</button>
+        </div>
+      </div>
+      <div class="profile-card">
+        <div class="profile-title" style="margin-bottom:12px">Gráfico de evolução</div>
+        <div id="peso-chart" style="height:120px;display:flex;align-items:flex-end;gap:6px;padding-bottom:20px;position:relative;overflow-x:auto"></div>
+      </div>
+      <div class="profile-card">
+        <div class="profile-title">Histórico</div>
+        <div id="peso-history"></div>
+      </div>
+    </div>
     </div></main>
 </div>
 <nav class="mob-nav">
@@ -432,6 +460,9 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
     </button>
     <button class="mob-btn" id="mb-metas" onclick="goTo('metas')">
       <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="3"/></svg>Metas
+    </button>
+    <button class="mob-btn" id="mb-peso" onclick="goTo('peso')">
+      <svg viewBox="0 0 16 16"><path d="M2 12 Q8 4 14 12"/><path d="M8 8v4"/></svg>Peso
     </button>
   </div>
 </nav>
@@ -492,6 +523,7 @@ const FOODS={
     {name:"Feijão preto cozido",     p:9, c:14, f:0.5,unit:"g", def:100},
     {name:"Lentilha cozida",         p:9, c:20, f:0.4,unit:"g", def:100},
     {name:"Pão francês",             p:8, c:56, f:1.5,unit:"un",def:1,pu:50},
+    {name:"Pão de forma",            p:8, c:48, f:4,  unit:"un",def:2,pu:25},
     {name:"Espaguete cozido",        p:5, c:30, f:1.4,unit:"g", def:180},
     {name:"Pão de alho",             p:5, c:40, f:12, unit:"un",def:1,pu:40},
     {name:"Pão integral",            p:9, c:41, f:4,  unit:"un",def:1,pu:25},
@@ -521,6 +553,7 @@ const FOODS={
     {name:"Abacate",                 p:2, c:9,  f:15, unit:"g", def:80},
     {name:"Mix de nuts",              p:15,c:20, f:55, unit:"g", def:30},
     {name:"Coco ralado",             p:3, c:6,  f:35, unit:"g", def:20},
+    {name:"Cacau em pó",             p:20,c:12, f:14, unit:"g", def:10},
     {name:"Óleo de coco",            p:0, c:0,  f:100,unit:"ml",def:10},
     {name:"Creme de leite",          p:2, c:3,  f:25, unit:"g", def:40},
     {name:"Pasta de amendoim",       p:25,c:20, f:50, unit:"g", def:30},
@@ -590,7 +623,7 @@ function goTo(p){
   document.querySelectorAll('.nav-btn').forEach(b=>{if(b.getAttribute('onclick')===`goTo('${p}')`)b.classList.add('active');});
   document.querySelectorAll('.mob-btn').forEach(b=>b.classList.remove('active'));
   const mb=document.getElementById('mb-'+p);if(mb)mb.classList.add('active');
-  if(p==='historico')renderHist();if(p==='graficos')renderCharts();if(p==='perfil')renderPerfil();if(p==='metas')renderMetas();
+  if(p==='historico')renderHist();if(p==='graficos')renderCharts();if(p==='perfil')renderPerfil();if(p==='metas')renderMetas();if(p==='peso')renderPeso();
 }
 
 function changeDay(d){const dt=new Date(curDate+'T12:00:00');dt.setDate(dt.getDate()+d);curDate=dt.toISOString().slice(0,10);sel={prot:{},carb:{},fat:{},veg:{}};curMeal=0;renderHoje();}
@@ -860,6 +893,89 @@ function hideTip(){
 
 function toast(msg,ok=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(ok?' ok':' err');setTimeout(()=>{t.className='toast';},2800);}
 
+// ── PESO ─────────────────────────────────────────────────────────────────────
+let PESO=load('mt_peso')||[];
+
+function savePeso(){
+  var d=document.getElementById('peso-data').value;
+  var v=parseFloat(document.getElementById('peso-val').value);
+  if(!d){toast('Selecione a data');return;}
+  if(!v||v<=0){toast('Informe o peso');return;}
+  PESO=PESO.filter(function(x){return x.d!==d;});
+  PESO.push({d:d,v:v});
+  PESO.sort(function(a,b){return a.d<b.d?-1:1;});
+  save('mt_peso',PESO);
+  document.getElementById('peso-val').value='';
+  renderPeso();
+  toast('Peso salvo!',true);
+}
+
+function renderPeso(){
+  // set today as default date
+  var dataInput=document.getElementById('peso-data');
+  if(!dataInput.value) dataInput.value=todayStr();
+
+  // chart
+  var chartEl=document.getElementById('peso-chart');
+  if(!chartEl)return;
+  if(!PESO.length){
+    chartEl.innerHTML='<div style="font-size:12px;color:var(--text3);padding:20px 0">Nenhum registro ainda.</div>';
+  } else {
+    var vals=PESO.map(function(x){return x.v;});
+    var mn=Math.min.apply(null,vals);
+    var mx=Math.max.apply(null,vals);
+    var range=mx-mn||1;
+    chartEl.innerHTML=PESO.map(function(x){
+      var h=Math.round(((x.v-mn)/range)*80)+10;
+      var lbl=x.d.slice(5); // MM-DD
+      return '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;min-width:28px">'
+        +'<div style="font-size:9px;color:var(--text2);font-family:DM Mono,monospace;white-space:nowrap">'+x.v+'</div>'
+        +'<div style="width:100%;background:var(--green);border-radius:3px 3px 0 0;height:'+h+'px;max-width:32px"></div>'
+        +'<div style="font-size:8px;color:var(--text3);font-family:DM Mono,monospace;white-space:nowrap">'+lbl+'</div>'
+        +'</div>';
+    }).join('');
+  }
+
+  // history
+  var histEl=document.getElementById('peso-history');
+  if(!histEl)return;
+  if(!PESO.length){
+    histEl.innerHTML='<div style="font-size:13px;color:var(--text3);padding:8px 0">Nenhum registro ainda.</div>';
+    return;
+  }
+  var rows=[...PESO].reverse();
+  var html='<table style="width:100%;border-collapse:collapse">'
+    +'<thead><tr>'
+    +'<th style="text-align:left;padding:8px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border)">Data</th>'
+    +'<th style="text-align:left;padding:8px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border)">Peso</th>'
+    +'<th style="text-align:left;padding:8px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border)">Variação</th>'
+    +'<th style="padding:8px 12px;border-bottom:1px solid var(--border)"></th>'
+    +'</tr></thead><tbody>';
+  rows.forEach(function(x,i){
+    var prev=rows[i+1];
+    var diff=prev?(x.v-prev.v):null;
+    var diffStr=diff===null?'—':(diff>0?'+':'')+diff.toFixed(1)+'kg';
+    var diffColor=diff===null?'var(--text3)':diff>0?'var(--red)':'var(--green)';
+    var dt=new Date(x.d+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});
+    html+='<tr style="border-bottom:1px solid var(--border)">'
+      +'<td style="padding:10px 12px;font-size:12px;font-family:DM Mono,monospace;color:var(--text)">'+dt+'</td>'
+      +'<td style="padding:10px 12px;font-size:14px;font-weight:600;font-family:DM Mono,monospace;color:var(--green)">'+x.v+'kg</td>'
+      +'<td style="padding:10px 12px;font-size:12px;font-family:DM Mono,monospace;color:'+diffColor+'">'+diffStr+'</td>'
+      +'<td style="padding:10px 12px;text-align:right"><button onclick="delPeso(\''+x.d+'\')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:2px 6px;border-radius:4px;font-family:Sora,sans-serif">remover</button></td>'
+      +'</tr>';
+  });
+  html+='</tbody></table>';
+  histEl.innerHTML=html;
+}
+
+function delPeso(d){
+  if(!confirm('Remover registro de '+d+'?'))return;
+  PESO=PESO.filter(function(x){return x.d!==d;});
+  save('mt_peso',PESO);
+  renderPeso();
+  toast('Registro removido');
+}
+
 // ── FIREBASE INIT (compat SDK - single script, no modules) ──────────────
 var firebaseConfig = {
   apiKey: "AIzaSyCHfZitelDoVLrtEVEWE4FXjorPC_A5neU",
@@ -895,11 +1011,13 @@ _auth.onAuthStateChanged(function(user){
     Promise.all([
       ref.doc('mt_goals').get(),
       ref.doc('mt_profile').get(),
-      ref.doc('mt_log').get()
+      ref.doc('mt_log').get(),
+      ref.doc('mt_peso').get()
     ]).then(function(snaps){
       if(snaps[0].exists) GOALS   = JSON.parse(snaps[0].data().value);
       if(snaps[1].exists) PROFILE = JSON.parse(snaps[1].data().value);
       if(snaps[2].exists) LOG     = JSON.parse(snaps[2].data().value);
+      if(snaps[3].exists) PESO    = JSON.parse(snaps[3].data().value);
       curDate = todayStr();
       curMeal = 0;
       renderHoje();
