@@ -442,7 +442,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         <div id="peso-history"></div>
       </div>
     </div>
-    </div></main>
+    </main>
 </div>
 <nav class="mob-nav">
   <div class="mob-nav-inner">
@@ -617,13 +617,18 @@ function getDay(d){if(!LOG[d])LOG[d]={meals:[{},{},{},{}],totals:{kcal:0,prot:0,
 function recalc(d){const l=getDay(d);let t={kcal:0,prot:0,carb:0,fat:0};l.meals.forEach(m=>{if(m&&m.kcal){t.kcal+=m.kcal;t.prot+=m.prot;t.carb+=m.carb;t.fat+=m.fat;}});l.totals={kcal:Math.round(t.kcal),prot:Math.round(t.prot*10)/10,carb:Math.round(t.carb*10)/10,fat:Math.round(t.fat*10)/10};}
 
 function goTo(p){
-  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+p).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b=>{if(b.getAttribute('onclick')===`goTo('${p}')`)b.classList.add('active');});
-  document.querySelectorAll('.mob-btn').forEach(b=>b.classList.remove('active'));
-  const mb=document.getElementById('mb-'+p);if(mb)mb.classList.add('active');
-  if(p==='historico')renderHist();if(p==='graficos')renderCharts();if(p==='perfil')renderPerfil();if(p==='metas')renderMetas();if(p==='peso')renderPeso();
+  document.querySelectorAll('.page').forEach(function(x){x.classList.remove('active');});
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
+  var pg=document.getElementById('page-'+p);
+  if(pg) pg.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(function(b){if(b.getAttribute('onclick')==="goTo('"+p+"')")b.classList.add('active');});
+  document.querySelectorAll('.mob-btn').forEach(function(b){b.classList.remove('active');});
+  var mb=document.getElementById('mb-'+p);if(mb)mb.classList.add('active');
+  if(p==='historico')renderHist();
+  else if(p==='graficos')renderCharts();
+  else if(p==='perfil')renderPerfil();
+  else if(p==='metas')renderMetas();
+  else if(p==='peso')renderPeso();
 }
 
 function changeDay(d){const dt=new Date(curDate+'T12:00:00');dt.setDate(dt.getDate()+d);curDate=dt.toISOString().slice(0,10);sel={prot:{},carb:{},fat:{},veg:{}};curMeal=0;renderHoje();}
