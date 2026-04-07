@@ -911,61 +911,85 @@ function savePeso(){
 }
 
 function renderPeso(){
-  // set today as default date
   var dataInput=document.getElementById('peso-data');
-  if(!dataInput.value) dataInput.value=todayStr();
+  if(dataInput&&!dataInput.value) dataInput.value=todayStr();
 
   // chart
   var chartEl=document.getElementById('peso-chart');
-  if(!chartEl)return;
-  if(!PESO.length){
-    chartEl.innerHTML='<div style="font-size:12px;color:var(--text3);padding:20px 0">Nenhum registro ainda.</div>';
-  } else {
-    var vals=PESO.map(function(x){return x.v;});
-    var mn=Math.min.apply(null,vals);
-    var mx=Math.max.apply(null,vals);
-    var range=mx-mn||1;
-    chartEl.innerHTML=PESO.map(function(x){
-      var h=Math.round(((x.v-mn)/range)*80)+10;
-      var lbl=x.d.slice(5); // MM-DD
-      return '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;min-width:28px">'
-        +'<div style="font-size:9px;color:var(--text2);font-family:DM Mono,monospace;white-space:nowrap">'+x.v+'</div>'
-        +'<div style="width:100%;background:var(--green);border-radius:3px 3px 0 0;height:'+h+'px;max-width:32px"></div>'
-        +'<div style="font-size:8px;color:var(--text3);font-family:DM Mono,monospace;white-space:nowrap">'+lbl+'</div>'
-        +'</div>';
-    }).join('');
+  if(chartEl){
+    if(!PESO.length){
+      chartEl.innerHTML='<div style="font-size:12px;color:var(--text3);padding:20px 0">Nenhum registro ainda.</div>';
+    } else {
+      var vals=PESO.map(function(x){return x.v;});
+      var mn=Math.min.apply(null,vals);
+      var mx=Math.max.apply(null,vals);
+      var range=mx-mn||1;
+      chartEl.innerHTML=PESO.map(function(x){
+        var h=Math.round(((x.v-mn)/range)*80)+10;
+        var lbl=x.d.slice(5);
+        return '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;min-width:28px">'
+          +'<div style="font-size:9px;color:var(--text2);font-family:DM Mono,monospace;white-space:nowrap">'+x.v+'</div>'
+          +'<div style="width:100%;background:var(--green);border-radius:3px 3px 0 0;height:'+h+'px;max-width:32px;min-height:4px"></div>'
+          +'<div style="font-size:8px;color:var(--text3);font-family:DM Mono,monospace;white-space:nowrap">'+lbl+'</div>'
+          +'</div>';
+      }).join('');
+    }
   }
 
-  // history
+  // history using DOM to avoid all quote issues
   var histEl=document.getElementById('peso-history');
-  if(!histEl)return;
+  if(!histEl) return;
+  histEl.innerHTML='';
   if(!PESO.length){
-    histEl.innerHTML='<div style="font-size:13px;color:var(--text3);padding:8px 0">Nenhum registro ainda.</div>';
+    var empty=document.createElement('div');
+    empty.style.cssText='font-size:13px;color:var(--text3);padding:8px 0';
+    empty.textContent='Nenhum registro ainda.';
+    histEl.appendChild(empty);
     return;
   }
-  var rows=[...PESO].reverse();
-  var html='<table style="width:100%;border-collapse:collapse">'
-    +'<thead><tr>'
-    +'<th style="text-align:left;padding:8px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border)">Data</th>'
-    +'<th style="text-align:left;padding:8px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border)">Peso</th>'
-    +'<th style="text-align:left;padding:8px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border)">Variação</th>'
-    +'<th style="padding:8px 12px;border-bottom:1px solid var(--border)"></th>'
-    +'</tr></thead><tbody>';
+  var table=document.createElement('table');
+  table.style.cssText='width:100%;border-collapse:collapse';
+  table.innerHTML='<thead><tr>'
+    +'<th style="text-align:left;padding:8px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;border-bottom:1px solid rgba(0,0,0,0.08)">Data</th>'
+    +'<th style="text-align:left;padding:8px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;border-bottom:1px solid rgba(0,0,0,0.08)">Peso</th>'
+    +'<th style="text-align:left;padding:8px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;border-bottom:1px solid rgba(0,0,0,0.08)">Variação</th>'
+    +'<th style="border-bottom:1px solid rgba(0,0,0,0.08)"></th>'
+    +'</tr></thead>';
+  var tbody=document.createElement('tbody');
+  var rows=PESO.slice().reverse();
   rows.forEach(function(x,i){
     var prev=rows[i+1];
-    var diff=prev?(x.v-prev.v):null;
-    var diffStr=diff===null?'—':(diff>0?'+':'')+diff.toFixed(1)+'kg';
+    var diff=prev?Math.round((x.v-prev.v)*10)/10:null;
+    var diffStr=diff===null?'—':(diff>0?'+':'')+diff+'kg';
     var diffColor=diff===null?'var(--text3)':diff>0?'var(--red)':'var(--green)';
     var dt=new Date(x.d+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});
-    html+='<tr style="border-bottom:1px solid var(--border)">'
-      +'<td style="padding:10px 12px;font-size:12px;font-family:DM Mono,monospace;color:var(--text)">'+dt+'</td>'
-      +'<td style="padding:10px 12px;font-size:14px;font-weight:600;font-family:DM Mono,monospace;color:var(--green)">'+x.v+'kg</td>'
-      +'<td style="padding:10px 12px;font-size:12px;font-family:DM Mono,monospace;color:'+diffColor+'">'+diffStr+'</td>'
-      +'<td style="padding:10px 12px;text-align:right"><button onclick="delPeso(\''+x.d+'\')" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:2px 6px;border-radius:4px;font-family:Sora,sans-serif">remover</button></td>'
-      +'</tr>';
+    var tr=document.createElement('tr');
+    tr.style.borderBottom='1px solid rgba(0,0,0,0.08)';
+    // date cell
+    var td1=document.createElement('td');
+    td1.style.cssText='padding:10px 12px;font-size:12px;font-family:DM Mono,monospace;color:var(--text)';
+    td1.textContent=dt;
+    // weight cell
+    var td2=document.createElement('td');
+    td2.style.cssText='padding:10px 12px;font-size:14px;font-weight:600;font-family:DM Mono,monospace;color:var(--green)';
+    td2.textContent=x.v+'kg';
+    // diff cell
+    var td3=document.createElement('td');
+    td3.style.cssText='padding:10px 12px;font-size:12px;font-family:DM Mono,monospace;color:'+diffColor;
+    td3.textContent=diffStr;
+    // action cell
+    var td4=document.createElement('td');
+    td4.style.cssText='padding:10px 12px;text-align:right';
+    var btn=document.createElement('button');
+    btn.textContent='remover';
+    btn.style.cssText='background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:2px 6px;border-radius:4px;font-family:Sora,sans-serif';
+    btn.onclick=(function(date){return function(){delPeso(date);};})(x.d);
+    td4.appendChild(btn);
+    tr.appendChild(td1);tr.appendChild(td2);tr.appendChild(td3);tr.appendChild(td4);
+    tbody.appendChild(tr);
   });
-  html+='</tbody></table>';
-  histEl.innerHTML=html;
+  table.appendChild(tbody);
+  histEl.appendChild(table);
 }
 
 function delPeso(d){
