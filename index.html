@@ -288,7 +288,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       <div class="nav-label">Configurar</div>
       <button class="nav-btn" onclick="goTo('perfil')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.3 2.7-6 6-6s6 2.7 6 6"/></svg>Perfil</button>
       <button class="nav-btn" onclick="goTo('metas')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="3"/></svg>Metas</button>
-      <button class="nav-btn" onclick="goTo('peso')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12 Q8 4 14 12"/><path d="M8 8v4"/></svg>Peso</button>
+      <button class="nav-btn" onclick="goTo('peso')"><svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12 Q8 3 14 12"/><path d="M8 7v5"/></svg>Peso</button>
     </div>
     <div class="sidebar-date"><div class="sidebar-date-label">Hoje <span class="sync-dot" id="sync-dot"></span></div><div class="sidebar-date-val" id="sb-date">—</div></div>
     <div class="user-row"><img class="user-avatar" id="user-avatar" src="" alt=""><span class="user-name" id="user-name">—</span><button class="logout-btn" onclick="fbLogout()">sair</button></div>
@@ -426,18 +426,18 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
         <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
           <div class="profile-field" style="flex:1;min-width:120px">
             <label>Data</label>
-            <input type="date" id="peso-data" style="width:100%;padding:8px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:'Sora',sans-serif;font-size:13px">
+            <input type="date" id="peso-data" style="width:100%;padding:8px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:Sora,sans-serif;font-size:13px">
           </div>
           <div class="profile-field" style="flex:1;min-width:100px">
             <label>Peso (kg)</label>
-            <input type="number" id="peso-val" step="0.1" placeholder="0.0" style="width:100%;padding:8px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:'DM Mono',monospace;font-size:13px">
+            <input type="number" id="peso-val" step="0.1" placeholder="0.0" style="width:100%;padding:8px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-family:DM Mono,monospace;font-size:13px">
           </div>
           <button class="profile-save" onclick="savePeso()" style="margin-bottom:0;white-space:nowrap">Salvar</button>
         </div>
       </div>
       <div class="profile-card">
-        <div class="profile-title" style="margin-bottom:12px">Gráfico de evolução</div>
-        <div id="peso-chart" style="height:120px;display:flex;align-items:flex-end;gap:6px;padding-bottom:20px;position:relative;overflow-x:auto"></div>
+        <div class="profile-title" style="margin-bottom:12px">Evolução do peso</div>
+        <div id="peso-chart" style="height:120px;display:flex;align-items:flex-end;gap:6px;overflow-x:auto"></div>
       </div>
       <div class="profile-card">
         <div class="profile-title">Histórico</div>
@@ -464,7 +464,7 @@ body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-he
       <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="3"/></svg>Metas
     </button>
     <button class="mob-btn" id="mb-peso" onclick="goTo('peso')">
-      <svg viewBox="0 0 16 16"><path d="M2 12 Q8 4 14 12"/><path d="M8 8v4"/></svg>Peso
+      <svg viewBox="0 0 16 16"><path d="M2 12 Q8 3 14 12"/><path d="M8 7v5"/></svg>Peso
     </button>
   </div>
 </nav>
@@ -525,7 +525,7 @@ const FOODS={
     {name:"Feijão preto cozido",     p:9, c:14, f:0.5,unit:"g", def:100},
     {name:"Lentilha cozida",         p:9, c:20, f:0.4,unit:"g", def:100},
     {name:"Pão francês",             p:8, c:56, f:1.5,unit:"un",def:1,pu:50},
-    {name:"Pão de forma",            p:8, c:48, f:4,  unit:"un",def:2,pu:25},
+    {name:"Pao de forma",            p:8, c:48, f:4,  unit:"un",def:2,pu:25},
     {name:"Espaguete cozido",        p:5, c:30, f:1.4,unit:"g", def:180},
     {name:"Pão de alho",             p:5, c:40, f:12, unit:"un",def:1,pu:40},
     {name:"Pão integral",            p:9, c:41, f:4,  unit:"un",def:1,pu:25},
@@ -555,7 +555,7 @@ const FOODS={
     {name:"Abacate",                 p:2, c:9,  f:15, unit:"g", def:80},
     {name:"Mix de nuts",              p:15,c:20, f:55, unit:"g", def:30},
     {name:"Coco ralado",             p:3, c:6,  f:35, unit:"g", def:20},
-    {name:"Cacau em pó",             p:20,c:12, f:14, unit:"g", def:10},
+    {name:"Cacau em po",             p:20,c:12, f:14, unit:"g", def:10},
     {name:"Óleo de coco",            p:0, c:0,  f:100,unit:"ml",def:10},
     {name:"Creme de leite",          p:2, c:3,  f:25, unit:"g", def:40},
     {name:"Pasta de amendoim",       p:25,c:20, f:50, unit:"g", def:30},
@@ -619,18 +619,13 @@ function getDay(d){if(!LOG[d])LOG[d]={meals:[{},{},{},{}],totals:{kcal:0,prot:0,
 function recalc(d){const l=getDay(d);let t={kcal:0,prot:0,carb:0,fat:0};l.meals.forEach(m=>{if(m&&m.kcal){t.kcal+=m.kcal;t.prot+=m.prot;t.carb+=m.carb;t.fat+=m.fat;}});l.totals={kcal:Math.round(t.kcal),prot:Math.round(t.prot*10)/10,carb:Math.round(t.carb*10)/10,fat:Math.round(t.fat*10)/10};}
 
 function goTo(p){
-  document.querySelectorAll('.page').forEach(function(x){x.classList.remove('active');});
-  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
-  var pg=document.getElementById('page-'+p);
-  if(pg) pg.classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(function(b){if(b.getAttribute('onclick')==="goTo('"+p+"')")b.classList.add('active');});
-  document.querySelectorAll('.mob-btn').forEach(function(b){b.classList.remove('active');});
-  var mb=document.getElementById('mb-'+p);if(mb)mb.classList.add('active');
-  if(p==='historico')renderHist();
-  else if(p==='graficos')renderCharts();
-  else if(p==='perfil')renderPerfil();
-  else if(p==='metas')renderMetas();
-  else if(p==='peso')renderPeso();
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>{if(b.getAttribute('onclick')===`goTo('${p}')`)b.classList.add('active');});
+  document.querySelectorAll('.mob-btn').forEach(b=>b.classList.remove('active'));
+  const mb=document.getElementById('mb-'+p);if(mb)mb.classList.add('active');
+  if(p==='historico')renderHist();if(p==='graficos')renderCharts();if(p==='perfil')renderPerfil();if(p==='metas')renderMetas();if(p==='peso')renderPeso();
 }
 
 function changeDay(d){const dt=new Date(curDate+'T12:00:00');dt.setDate(dt.getDate()+d);curDate=dt.toISOString().slice(0,10);sel={prot:{},carb:{},fat:{},veg:{}};curMeal=0;renderHoje();}
@@ -900,111 +895,99 @@ function hideTip(){
 
 function toast(msg,ok=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(ok?' ok':' err');setTimeout(()=>{t.className='toast';},2800);}
 
+
 // ── PESO ─────────────────────────────────────────────────────────────────────
-let PESO=load('mt_peso')||[];
+let PESO = load('mt_peso') || [];
 
 function savePeso(){
-  var d=document.getElementById('peso-data').value;
-  var v=parseFloat(document.getElementById('peso-val').value);
-  if(!d){toast('Selecione a data');return;}
-  if(!v||v<=0){toast('Informe o peso');return;}
-  PESO=PESO.filter(function(x){return x.d!==d;});
-  PESO.push({d:d,v:v});
-  PESO.sort(function(a,b){return a.d<b.d?-1:1;});
-  save('mt_peso',PESO);
-  document.getElementById('peso-val').value='';
+  var d = document.getElementById('peso-data').value;
+  var v = parseFloat(document.getElementById('peso-val').value);
+  if(!d){ toast('Selecione a data'); return; }
+  if(!v || v <= 0){ toast('Informe o peso'); return; }
+  PESO = PESO.filter(function(x){ return x.d !== d; });
+  PESO.push({d:d, v:v});
+  PESO.sort(function(a,b){ return a.d < b.d ? -1 : 1; });
+  save('mt_peso', PESO);
+  document.getElementById('peso-val').value = '';
   renderPeso();
-  toast('Peso salvo!',true);
+  toast('Peso salvo!', true);
 }
 
 function renderPeso(){
-  var dataInput=document.getElementById('peso-data');
-  if(dataInput&&!dataInput.value) dataInput.value=todayStr();
+  var di = document.getElementById('peso-data');
+  if(di && !di.value) di.value = todayStr();
 
-  // chart
-  var chartEl=document.getElementById('peso-chart');
+  var chartEl = document.getElementById('peso-chart');
   if(chartEl){
     if(!PESO.length){
-      chartEl.innerHTML='<div style="font-size:12px;color:var(--text3);padding:20px 0">Nenhum registro ainda.</div>';
+      chartEl.innerHTML = '<div style="font-size:12px;color:var(--text3);padding:20px 0">Nenhum registro ainda.</div>';
     } else {
-      var vals=PESO.map(function(x){return x.v;});
-      var mn=Math.min.apply(null,vals);
-      var mx=Math.max.apply(null,vals);
-      var range=mx-mn||1;
-      chartEl.innerHTML=PESO.map(function(x){
-        var h=Math.round(((x.v-mn)/range)*80)+10;
-        var lbl=x.d.slice(5);
-        return '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;min-width:28px">'
-          +'<div style="font-size:9px;color:var(--text2);font-family:DM Mono,monospace;white-space:nowrap">'+x.v+'</div>'
-          +'<div style="width:100%;background:var(--green);border-radius:3px 3px 0 0;height:'+h+'px;max-width:32px;min-height:4px"></div>'
-          +'<div style="font-size:8px;color:var(--text3);font-family:DM Mono,monospace;white-space:nowrap">'+lbl+'</div>'
-          +'</div>';
-      }).join('');
+      var vals = PESO.map(function(x){ return x.v; });
+      var mn = Math.min.apply(null, vals);
+      var mx = Math.max.apply(null, vals);
+      var range = mx - mn || 1;
+      var html = '';
+      PESO.forEach(function(x){
+        var h = Math.round(((x.v-mn)/range)*80)+10;
+        var lbl = x.d.slice(5);
+        html += '<div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;min-width:28px">'
+          + '<div style="font-size:9px;color:var(--text2);font-family:DM Mono,monospace;white-space:nowrap">'+x.v+'</div>'
+          + '<div style="width:100%;background:var(--green);border-radius:3px 3px 0 0;height:'+h+'px;max-width:32px;min-height:4px"></div>'
+          + '<div style="font-size:8px;color:var(--text3);font-family:DM Mono,monospace;white-space:nowrap">'+lbl+'</div>'
+          + '</div>';
+      });
+      chartEl.innerHTML = html;
     }
   }
 
-  // history using DOM to avoid all quote issues
-  var histEl=document.getElementById('peso-history');
+  var histEl = document.getElementById('peso-history');
   if(!histEl) return;
-  histEl.innerHTML='';
   if(!PESO.length){
-    var empty=document.createElement('div');
-    empty.style.cssText='font-size:13px;color:var(--text3);padding:8px 0';
-    empty.textContent='Nenhum registro ainda.';
-    histEl.appendChild(empty);
+    histEl.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:8px 0">Nenhum registro ainda.</div>';
     return;
   }
-  var table=document.createElement('table');
-  table.style.cssText='width:100%;border-collapse:collapse';
-  table.innerHTML='<thead><tr>'
-    +'<th style="text-align:left;padding:8px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;border-bottom:1px solid rgba(0,0,0,0.08)">Data</th>'
-    +'<th style="text-align:left;padding:8px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;border-bottom:1px solid rgba(0,0,0,0.08)">Peso</th>'
-    +'<th style="text-align:left;padding:8px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;border-bottom:1px solid rgba(0,0,0,0.08)">Variação</th>'
-    +'<th style="border-bottom:1px solid rgba(0,0,0,0.08)"></th>'
-    +'</tr></thead>';
-  var tbody=document.createElement('tbody');
-  var rows=PESO.slice().reverse();
-  rows.forEach(function(x,i){
-    var prev=rows[i+1];
-    var diff=prev?Math.round((x.v-prev.v)*10)/10:null;
-    var diffStr=diff===null?'—':(diff>0?'+':'')+diff+'kg';
-    var diffColor=diff===null?'var(--text3)':diff>0?'var(--red)':'var(--green)';
-    var dt=new Date(x.d+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});
-    var tr=document.createElement('tr');
-    tr.style.borderBottom='1px solid rgba(0,0,0,0.08)';
-    // date cell
-    var td1=document.createElement('td');
-    td1.style.cssText='padding:10px 12px;font-size:12px;font-family:DM Mono,monospace;color:var(--text)';
-    td1.textContent=dt;
-    // weight cell
-    var td2=document.createElement('td');
-    td2.style.cssText='padding:10px 12px;font-size:14px;font-weight:600;font-family:DM Mono,monospace;color:var(--green)';
-    td2.textContent=x.v+'kg';
-    // diff cell
-    var td3=document.createElement('td');
-    td3.style.cssText='padding:10px 12px;font-size:12px;font-family:DM Mono,monospace;color:'+diffColor;
-    td3.textContent=diffStr;
-    // action cell
-    var td4=document.createElement('td');
-    td4.style.cssText='padding:10px 12px;text-align:right';
-    var btn=document.createElement('button');
-    btn.textContent='remover';
-    btn.style.cssText='background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:2px 6px;border-radius:4px;font-family:Sora,sans-serif';
-    btn.onclick=(function(date){return function(){delPeso(date);};})(x.d);
+  var rows = PESO.slice().reverse();
+  var tbl = document.createElement('table');
+  tbl.style.cssText = 'width:100%;border-collapse:collapse';
+  var thead = '<thead><tr>'
+    + '<th style="text-align:left;padding:8px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;border-bottom:1px solid rgba(0,0,0,0.08)">Data</th>'
+    + '<th style="text-align:left;padding:8px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;border-bottom:1px solid rgba(0,0,0,0.08)">Peso</th>'
+    + '<th style="text-align:left;padding:8px 12px;font-size:10px;color:var(--text3);text-transform:uppercase;border-bottom:1px solid rgba(0,0,0,0.08)">Variacao</th>'
+    + '<th style="border-bottom:1px solid rgba(0,0,0,0.08)"></th>'
+    + '</tr></thead>';
+  tbl.innerHTML = thead;
+  var tbody = document.createElement('tbody');
+  rows.forEach(function(x, i){
+    var prev = rows[i+1];
+    var diff = prev ? Math.round((x.v - prev.v)*10)/10 : null;
+    var diffStr = diff === null ? '-' : (diff > 0 ? '+' : '') + diff + 'kg';
+    var diffColor = diff === null ? 'var(--text3)' : (diff > 0 ? 'var(--red)' : 'var(--green)');
+    var dt = new Date(x.d+'T12:00:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'});
+    var tr = document.createElement('tr');
+    tr.style.borderBottom = '1px solid rgba(0,0,0,0.08)';
+    var td1 = document.createElement('td'); td1.style.cssText='padding:10px 12px;font-size:12px;font-family:DM Mono,monospace'; td1.textContent = dt;
+    var td2 = document.createElement('td'); td2.style.cssText='padding:10px 12px;font-size:14px;font-weight:600;font-family:DM Mono,monospace;color:var(--green)'; td2.textContent = x.v+'kg';
+    var td3 = document.createElement('td'); td3.style.cssText='padding:10px 12px;font-size:12px;font-family:DM Mono,monospace;color:'+diffColor; td3.textContent = diffStr;
+    var td4 = document.createElement('td'); td4.style.cssText='padding:10px 12px;text-align:right';
+    var btn = document.createElement('button');
+    btn.textContent = 'remover';
+    btn.style.cssText = 'background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:2px 6px;border-radius:4px;font-family:Sora,sans-serif';
+    (function(date){ btn.onclick = function(){ delPeso(date); }; })(x.d);
     td4.appendChild(btn);
-    tr.appendChild(td1);tr.appendChild(td2);tr.appendChild(td3);tr.appendChild(td4);
+    tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3); tr.appendChild(td4);
     tbody.appendChild(tr);
   });
-  table.appendChild(tbody);
-  histEl.appendChild(table);
+  tbl.appendChild(tbody);
+  histEl.innerHTML = '';
+  histEl.appendChild(tbl);
 }
 
 function delPeso(d){
-  if(!confirm('Remover registro de '+d+'?'))return;
-  PESO=PESO.filter(function(x){return x.d!==d;});
-  save('mt_peso',PESO);
+  if(!confirm('Remover registro?')) return;
+  PESO = PESO.filter(function(x){ return x.d !== d; });
+  save('mt_peso', PESO);
   renderPeso();
-  toast('Registro removido');
+  toast('Removido');
 }
 
 // ── FIREBASE INIT (compat SDK - single script, no modules) ──────────────
